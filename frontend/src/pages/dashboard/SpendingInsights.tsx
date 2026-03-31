@@ -130,7 +130,7 @@ export default function SpendingInsights() {
         setAiLoading(true);
         AIAPI.getSpendingAnalysis(refresh)
             .then(data => {
-                if (data && !data.error) {
+                if (data) {
                     setAiAnalysis(data);
                 }
             })

@@ -88,7 +88,7 @@ export default function Overview() {
     function loadAIAnalysis(refresh = false) {
         setAiLoading(true);
         AIAPI.getSpendingAnalysis(refresh)
-            .then(data => { if (data && !data.error) setAiAnalysis(data); })
+            .then(data => { if (data) setAiAnalysis(data); })
             .catch(err => console.error('AI analysis failed:', err))
             .finally(() => setAiLoading(false));
     }

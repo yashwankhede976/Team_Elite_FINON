@@ -5,6 +5,92 @@
 
 export const BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:8000';
 
+type SpendingRecommendation = {
+    title: string;
+    description: string;
+    potential_savings: string;
+};
+
+type SpendingAnalysisResponse = {
+    patterns: string[];
+    anomalies: string[];
+    recommendations: SpendingRecommendation[];
+};
+
+function normalizeSpendingRecommendation(entry: any, index: number): SpendingRecommendation {
+    if (typeof entry === 'string') {
+        return {
+            title: `Recommendation ${index + 1}`,
+            description: entry,
+            potential_savings: '',
+        };
+    }
+
+    const title =
+        entry?.title ||
+        entry?.category ||
+        `Recommendation ${index + 1}`;
+
+    const description =
+        entry?.description ||
+        entry?.tip ||
+        '';
+
+    const potential =
+        entry?.potential_savings ||
+        (typeof entry?.save_per_month === 'number' ? `₹${entry.save_per_month}/month` : '');
+
+    return {
+        title,
+        description,
+        potential_savings: potential,
+    };
+}
+
+function normalizeSpendingAnalysis(data: any): SpendingAnalysisResponse {
+    const fallback: SpendingAnalysisResponse = {
+        patterns: ['No recent activity detected.'],
+        anomalies: [],
+        recommendations: [
+            {
+                title: 'Start tracking expenses',
+                description: 'Add transactions consistently to unlock richer AI insights.',
+                potential_savings: '',
+            },
+        ],
+    };
+
+    if (!data || typeof data !== 'object') {
+        return fallback;
+    }
+
+    const patterns = Array.isArray(data.patterns)
+        ? data.patterns.filter((p: any) => typeof p === 'string' && p.trim())
+        : fallback.patterns;
+
+    const anomalies = Array.isArray(data.anomalies)
+        ? data.anomalies.filter((a: any) => typeof a === 'string' && a.trim())
+        : [];
+
+    const recommendationsRaw = Array.isArray(data.recommendations)
+        ? data.recommendations
+        : [];
+
+    const recommendations = recommendationsRaw
+        .map((item: any, idx: number) => normalizeSpendingRecommendation(item, idx))
+        .filter((r: SpendingRecommendation) => r.title || r.description);
+
+    if (recommendations.length === 0) {
+        recommendations.push(...fallback.recommendations);
+    }
+
+    return {
+        patterns: patterns.length ? patterns : fallback.patterns,
+        anomalies,
+        recommendations,
+    };
+}
+
 // ─── Token helpers ──────────────────────────────────────────────
 function getTokens() {
     return {
@@ -280,7 +366,8 @@ export const AIAPI = {
         apiFetch<any>(`/api/ai/chat-sessions/${sessionId}/messages/`),
 
     getSpendingAnalysis: (refresh = false) =>
-        apiFetch<any>(`/api/ai/spending-analysis/${refresh ? '?refresh=true' : ''}`),
+        apiFetch<any>(`/api/ai/spending-analysis/${refresh ? '?refresh=true' : ''}`)
+            .then(normalizeSpendingAnalysis),
 
     getBudgetAdvice: () =>
         apiFetch<{ tips: { tip: string; category: string; save_per_month: number }[]; income?: number; expense?: number; savings?: number }>('/api/ai/budget-advice/'),
