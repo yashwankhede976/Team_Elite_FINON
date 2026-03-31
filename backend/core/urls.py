@@ -27,5 +27,6 @@ urlpatterns = [
     path('api/transactions/', include('transactions.urls')),
     path('api/goals/', include('savings_goals.urls')),
     path('api/gamification/', include('gamification.urls')),
+    path('api/reports/', include('reports.urls')),
 ]
 

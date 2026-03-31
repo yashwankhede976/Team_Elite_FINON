@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'gamification',
     'sockets', 
     'channels',
-
+    'reports',
 ]
 
 MIDDLEWARE = [
