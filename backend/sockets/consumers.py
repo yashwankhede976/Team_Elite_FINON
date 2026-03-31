@@ -2,7 +2,6 @@
 import asyncio
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from asgiref.sync import sync_to_async
-from core.settings import GEMINI_API_KEY
 from ai_assistant.services.document_chat import chat_with_document
 from ai_assistant.models import ChatSession, ChatMessage
 from django.contrib.auth.models import AnonymousUser

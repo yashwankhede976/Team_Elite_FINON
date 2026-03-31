@@ -15,14 +15,9 @@ from PyPDF2 import PdfReader
 from PIL import Image
 import pytesseract
 
-from google import genai
-from google.api_core.exceptions import ResourceExhausted, NotFound
-
 # Encryption utilities
 from core.encryption import encrypt_text, decrypt_text, encrypt_json, decrypt_json
-
-# Initialize Gemini client with new package
-client = genai.Client(api_key=settings.GEMINI_API_KEY)
+from .llm_client import LLMServiceBusyError, generate_text, strip_json_fences
 
 
 # ---------- Mongo client ----------
@@ -86,7 +81,7 @@ def extract_text_from_uploaded_file(uploaded_file):
 
 def call_llm_for_expense_extraction(raw_text: str):
     """
-    Use Gemini to extract structured expense data from raw text.
+    Use ChatGPT to extract structured expense data from raw text.
     Returns a dict with 'expenses' array and metadata.
     """
     prompt = f"""You are an AI assistant that extracts expense data from bill/receipt text.
@@ -113,32 +108,18 @@ Return ONLY valid JSON with this structure:
 JSON:"""
 
     try:
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=prompt
+        json_str = generate_text(
+            user_prompt=prompt,
+            max_output_tokens=1200,
+            temperature=0.0,
         )
-        
-        print("LLM raw response:", response)    
-        # Extract the message content from the response
-        json_str = response.text
         print("LLM output:", json_str)
-        
-        # Remove markdown code blocks if present
-        if json_str.startswith("```json"):
-            json_str = json_str[7:]
-        if json_str.startswith("```"):
-            json_str = json_str[3:]
-        if json_str.endswith("```"):
-            json_str = json_str[:-3]
+        json_str = strip_json_fences(json_str)
         
         data = json.loads(json_str.strip())
         return data
-    
-    except ResourceExhausted:
-        raise RuntimeError("Gemini API quota exceeded. Please try again later.")
-    
-    except NotFound as e:
-        raise RuntimeError("Invalid Gemini model. gemini-2.0-flash not found.") from e
+    except LLMServiceBusyError:
+        raise RuntimeError("AI provider quota exceeded. Please try again later.")
     
     except json.JSONDecodeError as e:
         print(f"JSON parse error: {e}")

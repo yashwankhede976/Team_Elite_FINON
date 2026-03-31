@@ -1,11 +1,7 @@
 # ai_assistant/services/expense_chat.py
 import json
 from typing import List, Dict
-import google.generativeai as genai
-from django.conf import settings
-
-# Configure Gemini
-genai.configure(api_key=settings.GEMINI_API_KEY)
+from .llm_client import generate_text
 
 
 def _build_rag_context(raw_text: str, question: str, max_chars: int = 4000) -> str:
@@ -40,7 +36,7 @@ def _build_rag_context(raw_text: str, question: str, max_chars: int = 4000) -> s
 
 def chat_with_expense_data(question: str, expense_doc: dict) -> str:
     """
-    Non-streaming LLM call using Gemini with:
+    Non-streaming LLM call using ChatGPT with:
     - Mongo 'extracted_data' (expenses + summary)
     - Mongo 'raw_text' (for naive RAG context)
     """
@@ -95,13 +91,11 @@ YOU MUST:
         f"{rag_context}"
     )
 
-    model = genai.GenerativeModel('gemini-1.5-flash')
-    response = model.generate_content(
-        f"{system_prompt}\n\n{user_content}",
-        generation_config=genai.types.GenerationConfig(
-            temperature=0.4,
-            max_output_tokens=900,
-        )
+    response_text = generate_text(
+        user_prompt=user_content,
+        system_prompt=system_prompt,
+        temperature=0.4,
+        max_output_tokens=900,
     )
 
-    return response.text
+    return response_text

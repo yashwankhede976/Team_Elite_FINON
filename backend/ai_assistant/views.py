@@ -487,9 +487,7 @@ class BudgetAdviceAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        from google import genai
-        from google.api_core.exceptions import ResourceExhausted
-        from django.conf import settings
+        from .services.llm_client import LLMServiceBusyError, generate_text, strip_json_fences
         from transactions.models import Transaction
         from django.utils import timezone
         from datetime import timedelta
@@ -538,15 +536,11 @@ class BudgetAdviceAPIView(APIView):
         )
 
         try:
-            client = genai.Client(api_key=settings.GEMINI_API_KEY)
-            resp = client.models.generate_content(model='gemini-2.0-flash', contents=prompt)
-            raw = resp.text.strip()
-            if raw.startswith("```json"): raw = raw[7:]
-            if raw.startswith("```"): raw = raw[3:]
-            if raw.endswith("```"): raw = raw[:-3]
+            raw = generate_text(user_prompt=prompt, max_output_tokens=1200)
+            raw = strip_json_fences(raw)
             tips = json.loads(raw.strip())
             return Response({"tips": tips, "income": income, "expense": total_expense, "savings": savings})
-        except ResourceExhausted:
+        except LLMServiceBusyError:
             return Response({"tips": [{"tip": "AI service is busy. Try again later.", "category": "System", "save_per_month": 0}]})
         except Exception as e:
             print(f"Budget advice error: {e}")

@@ -1,17 +1,13 @@
 import json
 import asyncio
 from typing import Any, Callable, Dict, Optional
-import google.generativeai as genai
-from django.conf import settings
+from .llm_client import generate_text
 
 from .expense_chat import chat_with_expense_data
 from .expense_extraction import get_mongo_collection
 from .expense_summary import summarize_expenses_from_data
 
 from transactions.models import Transaction
-
-# Configure Gemini
-genai.configure(api_key=settings.GEMINI_API_KEY)
 
 
 class Agent:
@@ -25,7 +21,7 @@ class Agent:
     The agent streams structured messages by calling the provided send_fn callback.
     """
 
-    def __init__(self, model: str = "gemini-1.5-flash"):
+    def __init__(self, model: str = "openai/gpt-5.2"):
         self.model = model
 
     async def run(
@@ -79,15 +75,13 @@ class Agent:
         return final
 
     def _call_llm_for_plan(self, prompt: str) -> str:
-        model = genai.GenerativeModel(self.model)
-        response = model.generate_content(
-            f"You are Finexa AI agent that chooses which tool to call.\n\n{prompt}",
-            generation_config=genai.types.GenerationConfig(
-                temperature=0.0,
-                max_output_tokens=300,
-            )
+        return generate_text(
+            user_prompt=prompt,
+            system_prompt="You are Finexa AI agent that chooses which tool to call.",
+            model=self.model,
+            temperature=0.0,
+            max_output_tokens=300,
         )
-        return response.text
 
     def _build_planning_prompt(self, question: str) -> str:
         return (

@@ -5,10 +5,10 @@ except ImportError:
     print("pymongo: MISSING")
 
 try:
-    import google.generativeai
-    print("google-generativeai: OK")
+    import openai
+    print("openai: OK")
 except ImportError:
-    print("google-generativeai: MISSING")
+    print("openai: MISSING")
 
 try:
     import PyPDF2

@@ -1,12 +1,7 @@
 # ai_assistant/services/expense_summary.py
 
-from google import genai
-from django.conf import settings
-from google.api_core.exceptions import ResourceExhausted, NotFound
 import json
-
-# Configure Gemini with new client
-client = genai.Client(api_key=settings.GEMINI_API_KEY)
+from .llm_client import LLMServiceBusyError, generate_text, strip_json_fences
 
 def summarize_expenses_from_data(data: dict) -> dict:
     """
@@ -31,28 +26,16 @@ def summarize_expenses_from_data(data: dict) -> dict:
     """
 
     try:
-        response = client.models.generate_content(
-            model='gemini-2.0-flash',
-            contents=f"{system_prompt}\n\nExpense data:\n{json.dumps(data)}"
+        raw = generate_text(
+            user_prompt=f"Expense data:\n{json.dumps(data)}",
+            system_prompt=system_prompt,
+            max_output_tokens=800,
         )
-
-        raw = response.text.strip()
-        
-        # Remove markdown code blocks if present
-        if raw.startswith("```json"):
-            raw = raw[7:]
-        if raw.startswith("```"):
-            raw = raw[3:]
-        if raw.endswith("```"):
-            raw = raw[:-3]
+        raw = strip_json_fences(raw)
 
         return json.loads(raw.strip())
-    
-    except ResourceExhausted:
-        return {"error": "Gemini API quota exceeded"}
-    
-    except NotFound as e:
-        return {"error": "Invalid Gemini model"}
+    except LLMServiceBusyError:
+        return {"error": "AI provider is currently busy"}
     
     except json.JSONDecodeError:
         return {"error": "Invalid output from LLM", "raw_response": raw}

@@ -1,16 +1,11 @@
 # ai_assistant/services/simulation_service.py
 
-from google import genai
-from django.conf import settings
-from google.api_core.exceptions import ResourceExhausted, NotFound
 import json
-
-# Initialize Gemini client
-client = genai.Client(api_key=settings.GEMINI_API_KEY)
+from .llm_client import LLMServiceBusyError, generate_text, strip_json_fences
 
 def simulate_financial_impact(scenario_type: str, amount: float, current_score: int = 750, scenario_details: dict = None) -> dict:
     """
-    Simulate the impact of a financial decision using Gemini.
+    Simulate the impact of a financial decision using ChatGPT.
     """
     if scenario_details is None:
         scenario_details = {}
@@ -85,24 +80,14 @@ def simulate_financial_impact(scenario_type: str, amount: float, current_score: 
     )
 
     try:
-        response = client.models.generate_content(
-            model='gemini-2.0-flash',
-            contents=prompt
+        raw = generate_text(
+            user_prompt=prompt,
+            max_output_tokens=1200,
         )
-
-        raw = response.text.strip()
-        
-        # Clean up markdown
-        if raw.startswith("```json"):
-            raw = raw[7:]
-        if raw.startswith("```"):
-            raw = raw[3:]
-        if raw.endswith("```"):
-            raw = raw[:-3]
+        raw = strip_json_fences(raw)
 
         return json.loads(raw.strip())
-
-    except ResourceExhausted:
+    except LLMServiceBusyError:
         return {
             "impact_points": 0,
             "new_score": current_score,
@@ -172,15 +157,11 @@ def analyze_credit_health(loans: list, current_score: int) -> dict:
     )
 
     try:
-        response = client.models.generate_content(
-            model='gemini-2.0-flash',
-            contents=prompt
+        raw = generate_text(
+            user_prompt=prompt,
+            max_output_tokens=1200,
         )
-        # Parse JSON similar to simulate function
-        raw = response.text.strip()
-        if raw.startswith("```json"): raw = raw[7:]
-        if raw.startswith("```"): raw = raw[3:]
-        if raw.endswith("```"): raw = raw[:-3]
+        raw = strip_json_fences(raw)
         return json.loads(raw.strip())
     
     except Exception as e:

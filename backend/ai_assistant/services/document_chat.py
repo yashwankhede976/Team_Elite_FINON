@@ -4,13 +4,8 @@ Service for AI chat with SQL document content.
 Fetches document content and generates short, professional 2-line responses.
 """
 from typing import Optional, List
-from google import genai
-from django.conf import settings
 from django.db import models
-from google.api_core.exceptions import ResourceExhausted, NotFound
-
-# Configure Gemini with new client
-client = genai.Client(api_key=settings.GEMINI_API_KEY)
+from .llm_client import generate_text
 
 
 def fetch_documents_content(user_id: int, document_id: Optional[int] = None) -> str:
@@ -74,9 +69,8 @@ Question: {question}
 
 Provide a short, professional 2-line answer."""
 
-    response = client.models.generate_content(
-        model='gemini-2.0-flash',
-        contents=f"{system_prompt}\n\n{user_message}"
+    return generate_text(
+        user_prompt=user_message,
+        system_prompt=system_prompt,
+        max_output_tokens=400,
     )
-    
-    return response.text.strip()

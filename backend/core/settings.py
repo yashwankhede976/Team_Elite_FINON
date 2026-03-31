@@ -142,7 +142,19 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Environment variables
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY") or os.getenv("OPENAI_API_KEY")
+OPENROUTER_BASE_URL = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
+OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "openai/gpt-5.2")
+OPENROUTER_SITE_URL = os.getenv("OPENROUTER_SITE_URL", "")
+OPENROUTER_APP_NAME = os.getenv("OPENROUTER_APP_NAME", "")
+OPENAI_DIRECT_API_KEY = os.getenv("OPENAI_DIRECT_API_KEY") or os.getenv("OPENAI_API_KEY")
+OPENAI_DIRECT_BASE_URL = os.getenv("OPENAI_DIRECT_BASE_URL", "https://api.openai.com/v1")
+OPENAI_DIRECT_MODEL = os.getenv("OPENAI_DIRECT_MODEL", "gpt-4.1-mini")
+
+# LLM routing controls: auto/openrouter/openai
+LLM_DEFAULT_ROUTE = os.getenv("LLM_DEFAULT_ROUTE", "auto")
+# In auto mode, providers are tried in this order.
+LLM_PROVIDER_ORDER = os.getenv("LLM_PROVIDER_ORDER", "openrouter,openai")
 AUTH_USER_MODEL = "users.User"
 
 MONGODB_URI = os.getenv("MONGO_URI")

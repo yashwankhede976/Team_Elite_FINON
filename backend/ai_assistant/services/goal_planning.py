@@ -1,11 +1,8 @@
 """
 AI-Powered Goal-Based Financial Planning Service
-Uses Gemini to provide feasibility analysis, investment suggestions,
+Uses ChatGPT to provide feasibility analysis, investment suggestions,
 behavioral coaching, and multi-goal prioritization.
 """
-from google import genai
-from django.conf import settings
-from google.api_core.exceptions import ResourceExhausted
 import json
 from datetime import timedelta
 from django.utils import timezone
@@ -14,8 +11,66 @@ from decimal import Decimal
 from transactions.models import Transaction
 from savings_goals.models import SavingsGoal, GoalPlanAnalysis
 from ai_assistant.models import WalletTransaction, Wallet, FinancialHealthScore
+from .llm_client import LLMServiceBusyError, generate_text, strip_json_fences
 
-client = genai.Client(api_key=settings.GEMINI_API_KEY)
+
+def _goal_plan_fallback(ctx, message: str) -> dict:
+    goals_analysis = []
+    for g in ctx.get('goals', []):
+        goals_analysis.append({
+            'goal_id': g['id'],
+            'goal_title': g['title'],
+            'feasibility_pct': 0,
+            'feasibility_status': 'Pending AI analysis',
+            'achievement_probability_pct': 0,
+            'risk_adjusted_probability_pct': 0,
+            'probability_explanation': message,
+            'required_monthly': g.get('required_monthly', 0),
+            'savings_gap': max(0, (g.get('required_monthly') or 0) - (g.get('monthly_contribution') or 0)),
+            'delay_months': g.get('delay_months', 0),
+            'adjusted_completion_date': None,
+            'increase_needed_to_stay_on_track': max(0, (g.get('required_monthly') or 0) - (g.get('monthly_contribution') or 0)),
+            'budget_suggestions': [],
+            'timeline_category': 'unknown',
+        })
+
+    return {
+        'goals_analysis': goals_analysis,
+        'prioritization': {
+            'ranked_goals': [],
+            'strategy_summary': 'Detailed prioritization is temporarily unavailable.',
+            'over_allocated': False,
+            'total_recommended_monthly': 0,
+        },
+        'investment_suggestions': [],
+        'income_simulation': {
+            'drop_10_pct': {
+                'new_disposable': max(0, ctx.get('disposable_income', 0) * 0.9),
+                'goals_impacted': [],
+                'delay_added_months': 0,
+                'adjustment_needed': 'Retry analysis for accurate impact details.',
+            },
+            'drop_20_pct': {
+                'new_disposable': max(0, ctx.get('disposable_income', 0) * 0.8),
+                'goals_impacted': [],
+                'delay_added_months': 0,
+                'adjustment_needed': 'Retry analysis for accurate impact details.',
+            },
+            'increase_10_pct': {
+                'new_disposable': max(0, ctx.get('disposable_income', 0) * 1.1),
+                'time_saved_months': 0,
+                'benefit': 'Retry analysis for accurate benefit details.',
+            },
+        },
+        'coaching': {
+            'messages': [message],
+            'weekly_challenge': 'Track all expenses this week and review category-wise totals.',
+            'automatic_transfer_suggestion': 'Set a small automatic monthly transfer toward top-priority goals.',
+            'habit_tip': 'Review subscriptions and recurring payments monthly.',
+        },
+        'overall_summary': message,
+        'degraded': True,
+    }
 
 
 def _gather_user_financial_context(user):
@@ -217,17 +272,11 @@ RULES:
 """
 
     try:
-        response = client.models.generate_content(
-            model='gemini-2.0-flash',
-            contents=prompt
+        raw = generate_text(
+            user_prompt=prompt,
+            max_output_tokens=1400,
         )
-        raw = response.text.strip()
-        if raw.startswith("```json"):
-            raw = raw[7:]
-        if raw.startswith("```"):
-            raw = raw[3:]
-        if raw.endswith("```"):
-            raw = raw[:-3]
+        raw = strip_json_fences(raw)
 
         result = json.loads(raw.strip())
 
@@ -236,11 +285,17 @@ RULES:
 
         return result
 
-    except ResourceExhausted:
-        return {"error": "AI service is currently busy. Please try again later."}
+    except LLMServiceBusyError:
+        return _goal_plan_fallback(
+            ctx,
+            "AI analysis is temporarily busy. Showing a safe fallback plan. Please try again shortly.",
+        )
     except Exception as e:
         print(f"Goal planning analysis failed: {e}")
-        return {"error": "Failed to generate goal plan analysis."}
+        return _goal_plan_fallback(
+            ctx,
+            "Goal planning analysis is temporarily unavailable. Showing a safe fallback plan.",
+        )
 
 
 def simulate_income_change(user, change_pct):

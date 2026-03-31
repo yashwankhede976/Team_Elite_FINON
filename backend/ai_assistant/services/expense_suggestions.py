@@ -1,12 +1,7 @@
 # ai_assistant/services/expense_suggestions.py
 
-from google import genai
-from django.conf import settings
-from google.api_core.exceptions import ResourceExhausted, NotFound
 import json
-
-# Configure Gemini with new client
-client = genai.Client(api_key=settings.GEMINI_API_KEY)
+from .llm_client import LLMServiceBusyError, generate_text, strip_json_fences
 
 def generate_saving_suggestions(expense_data: dict) -> dict:
     """
@@ -34,28 +29,16 @@ def generate_saving_suggestions(expense_data: dict) -> dict:
     """
 
     try:
-        response = client.models.generate_content(
-            model='gemini-2.0-flash',
-            contents=f"{system_prompt}\n\nExpense data:\n{json.dumps(expense_data)}"
+        raw_output = generate_text(
+            user_prompt=f"Expense data:\n{json.dumps(expense_data)}",
+            system_prompt=system_prompt,
+            max_output_tokens=900,
         )
-
-        raw_output = response.text.strip()
-        
-        # Remove markdown code blocks if present
-        if raw_output.startswith("```json"):
-            raw_output = raw_output[7:]
-        if raw_output.startswith("```"):
-            raw_output = raw_output[3:]
-        if raw_output.endswith("```"):
-            raw_output = raw_output[:-3]
+        raw_output = strip_json_fences(raw_output)
         
         return json.loads(raw_output.strip())
-    
-    except ResourceExhausted:
+    except LLMServiceBusyError:
         return {"suggestions": [], "error": "API quota exceeded"}
-    
-    except NotFound:
-        return {"suggestions": [], "error": "Model not found"}
     
     except json.JSONDecodeError:
         return {"suggestions": [], "raw_output": raw_output}

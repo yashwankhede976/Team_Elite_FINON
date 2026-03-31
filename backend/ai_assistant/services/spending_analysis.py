@@ -1,19 +1,14 @@
-from google import genai
-from django.conf import settings
-from google.api_core.exceptions import ResourceExhausted
 import json
 from datetime import timedelta
 from django.utils import timezone
 from transactions.models import Transaction
 from ai_assistant.models import WalletTransaction, SpendingPattern
-
-# Configure Gemini
-client = genai.Client(api_key=settings.GEMINI_API_KEY)
+from .llm_client import LLMServiceBusyError, generate_text, strip_json_fences
 
 def analyze_user_spending(user):
     """
     Analyzes user's transaction history (Wallet + Manual Transactions)
-    using Gemini to identify patterns and generate recommendations.
+    using ChatGPT to identify patterns and generate recommendations.
     
     Returns:
         dict: The structured analysis result.
@@ -52,7 +47,7 @@ def analyze_user_spending(user):
         desc = t.description or "Wallet txn"
         txn_summary += f"- {t.timestamp.strftime('%Y-%m-%d')}: WALLET {t_type} - {desc} ₹{t.amount}\n"
         
-    # 2. Prompt Gemini
+    # 2. Prompt ChatGPT
     system_prompt = """
     You are an expert financial analyst. Analyze the following user transaction history.
     Identify spending patterns, unusual anomalies, and providing actionable saving recommendations.
@@ -70,20 +65,12 @@ def analyze_user_spending(user):
     """
     
     try:
-        response = client.models.generate_content(
-            model='gemini-2.0-flash',
-            contents=f"{system_prompt}\n\n{txn_summary}"
+        raw_output = generate_text(
+            user_prompt=txn_summary,
+            system_prompt=system_prompt,
+            max_output_tokens=1200,
         )
-        
-        raw_output = response.text.strip()
-        
-        # Clean markdown code blocks
-        if raw_output.startswith("```json"):
-            raw_output = raw_output[7:]
-        if raw_output.startswith("```"):
-            raw_output = raw_output[3:]
-        if raw_output.endswith("```"):
-            raw_output = raw_output[:-3]
+        raw_output = strip_json_fences(raw_output)
             
         analysis_result = json.loads(raw_output.strip())
         
@@ -95,8 +82,18 @@ def analyze_user_spending(user):
         
         return analysis_result
 
-    except ResourceExhausted:
-        return {"error": "AI service is currently busy. Please try again later."}
+    except LLMServiceBusyError:
+        return {
+            "patterns": ["AI analysis is temporarily unavailable due to provider load."],
+            "anomalies": [],
+            "recommendations": [
+                {
+                    "title": "Try again shortly",
+                    "description": "Detailed spending insights will be available once provider load drops.",
+                    "potential_savings": "Unknown",
+                }
+            ],
+        }
     except Exception as e:
         print(f"Spending analysis failed: {e}")
         return {"error": "Failed to analyze spending patterns."}
