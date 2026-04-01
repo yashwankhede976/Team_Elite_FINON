@@ -1,0 +1,1 @@
+{'total_amount': 0.0, 'record_count': 1, 'biggest_category': 'Other', 'currency': 'INR', 'top_merchants': ['Unknown'], 'suggestions': ['Most of your spending went to Other. Consider setting a budget limit here.']}

@@ -475,7 +475,7 @@ export default function Overview() {
                     </div>
                     <div>
                         <h2 className={`font-bold text-lg tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>AI Spending Insights</h2>
-                        <p className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Powered by FINON Intelligence</p>
+                        <p className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Powered by Finexa Intelligence</p>
                     </div>
                 </div>
                 <button onClick={() => loadAIAnalysis(true)} disabled={aiLoading}

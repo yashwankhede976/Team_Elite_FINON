@@ -14,27 +14,36 @@ def analyze_user_spending(user):
         dict: The structured analysis result.
     """
     
-    # 1. Gather Data (Last 30 Days)
+    # 1. Gather Data (recent window first, all-time fallback)
     thirty_days_ago = timezone.now() - timedelta(days=30)
-    
-    # Fetch Manual Transactions (Income/Expense)
-    manual_txns = list(Transaction.objects.filter(
-        user=user, 
+
+    # Fetch recent manual transactions and wallet transactions.
+    recent_manual_txns = list(Transaction.objects.filter(
+        user=user,
         date__gte=thirty_days_ago
     ))
-    
-    # Fetch Wallet Transactions
-    wallet_txns = list(WalletTransaction.objects.filter(
+    recent_wallet_txns = list(WalletTransaction.objects.filter(
         wallet__user=user,
         timestamp__gte=thirty_days_ago
     ))
+
+    # If statements were uploaded with older dates, include all history
+    # so Spending Insights does not miss imported data.
+    if recent_manual_txns or recent_wallet_txns:
+        manual_txns = recent_manual_txns
+        wallet_txns = recent_wallet_txns
+        period_label = "Last 30 Days"
+    else:
+        manual_txns = list(Transaction.objects.filter(user=user))
+        wallet_txns = list(WalletTransaction.objects.filter(wallet__user=user))
+        period_label = "All Time"
     
     # Format for LLM
-    txn_summary = "Recent Transactions (Last 30 Days):\n"
+    txn_summary = f"Transactions ({period_label}):\n"
     
     if not manual_txns and not wallet_txns:
         return {
-            "patterns": ["No recent activity detected."],
+            "patterns": ["No activity detected yet."],
             "anomalies": [],
             "recommendations": ["Start tracking your expenses to get personalized insights."]
         }
@@ -70,7 +79,7 @@ def analyze_user_spending(user):
             
     if not total_spent:
         return {
-            "patterns": ["No significant spending detected in the last 30 days."],
+            "patterns": [f"No significant spending detected in {period_label.lower()}."],
             "anomalies": [],
             "recommendations": [{"title": "Track Expenses", "description": "Log more transactions to get insights.", "potential_savings": "₹0"}]
         }
@@ -80,7 +89,7 @@ def analyze_user_spending(user):
     top_amt = top_categories[0][1] if top_categories else 0
     
     patterns = [
-        f"You made {total_txns} transactions in the last 30 days totaling ₹{total_spent:,.0f}.",
+        f"You made {total_txns} transactions in {period_label.lower()} totaling ₹{total_spent:,.0f}.",
         f"Your highest spending category is {top_cat} (₹{top_amt:,.0f}), accounting for {round((top_amt/total_spent)*100)}% of your expenses."
     ]
     

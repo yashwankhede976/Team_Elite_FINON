@@ -10,6 +10,7 @@ import {
   AreaChart, Area, XAxis, YAxis, BarChart, Bar, Legend,
 } from 'recharts';
 import { useTheme } from '../../contexts/ThemeContext';
+import { TransactionsAPI } from '../../lib/api';
 import { parseCSV, parsePDFText, extractPDFText } from '../../lib/upiParser';
 import {
   processTransactions, getCategorySummary, getMonthlyTrend,
@@ -112,6 +113,18 @@ export default function UPIAnalyser() {
 
       const totalIncome = Math.round(categorised.filter(t => t.credit > 0).reduce((s, t) => s + t.credit, 0));
       const totalExpenses = Math.round(categories.reduce((s, c) => s + c.amount, 0));
+
+      // Sync to backend transactions database silently
+      const apiTransactions = categorised.map(t => ({
+        amount: Math.abs(t.credit > 0 ? t.credit : t.debit),
+        category: t.category,
+        type: t.credit > 0 ? 'income' : 'expense' as 'income'|'expense',
+        description: t.description.substring(0, 200) || 'Uploaded Transaction',
+        date: t.date,
+        source: 'pdf',
+        source_document: file.name
+      }));
+      TransactionsAPI.bulkCreate(apiTransactions).catch((err) => console.error('Failed to sync to backend:', err));
 
       setResult({
         transactions: categorised,

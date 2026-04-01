@@ -20,6 +20,30 @@ interface AIAnalysis {
     recommendations: { title: string; description: string; potential_savings: string }[];
 }
 
+interface ExpenseTx {
+    id: number | string;
+    date: string;
+    category: string;
+    description: string;
+    amount: number;
+    source: string;
+    source_document?: string;
+}
+
+function normalizeTxType(rawType: unknown): 'income' | 'expense' | null {
+    const t = String(rawType || '').trim().toLowerCase();
+    if (t === 'income' || t === 'credit') return 'income';
+    if (t === 'expense' || t === 'debit') return 'expense';
+    return null;
+}
+
+function parseAmount(rawAmount: unknown): number {
+    if (typeof rawAmount === 'number') return Number.isFinite(rawAmount) ? rawAmount : 0;
+    const cleaned = String(rawAmount || '').replace(/[^0-9.-]/g, '');
+    const n = parseFloat(cleaned);
+    return Number.isFinite(n) ? n : 0;
+}
+
 const CustomTooltip = ({ active, payload }: any) => {
     if (!active || !payload?.length) return null;
     return (
@@ -47,6 +71,7 @@ export default function SpendingInsights() {
     const [aiAnalysis, setAiAnalysis] = useState<AIAnalysis | null>(null);
     const [aiLoading, setAiLoading] = useState(false);
     const [txCount, setTxCount] = useState(0);
+    const [expenseTxns, setExpenseTxns] = useState<ExpenseTx[]>([]);
 
     // Fetch ALL transactions across all pages
     useEffect(() => {
@@ -65,9 +90,32 @@ export default function SpendingInsights() {
                 }
                 setTxCount(allTx.length);
 
-                const expenses = allTx.filter((t: any) => t.type === 'expense');
-                const income = allTx.filter((t: any) => t.type === 'income');
-                const txIncome = income.reduce((s: number, t: any) => s + parseFloat(t.amount), 0);
+                const normalizedTx = allTx.map((t: any) => ({
+                    ...t,
+                    _normalizedType: normalizeTxType(t.type),
+                    _normalizedAmount: parseAmount(t.amount),
+                }));
+
+                const expenses = normalizedTx.filter((t: any) => t._normalizedType === 'expense');
+                const income = normalizedTx.filter((t: any) => t._normalizedType === 'income');
+                const txIncome = income.reduce((s: number, t: any) => s + t._normalizedAmount, 0);
+
+                const mappedExpenseTxns: ExpenseTx[] = expenses
+                    .map((t: any) => ({
+                        id: t.id,
+                        date: String(t.date || ''),
+                        category: t.category || 'Other',
+                        description: t.description || 'Expense',
+                        amount: t._normalizedAmount,
+                        source: String(t.source || 'manual'),
+                        source_document: t.source_document,
+                    }))
+                    .sort((a, b) => {
+                        const da = new Date(a.date).getTime();
+                        const db = new Date(b.date).getTime();
+                        return (Number.isFinite(db) ? db : 0) - (Number.isFinite(da) ? da : 0);
+                    });
+                setExpenseTxns(mappedExpenseTxns);
 
                 // If no income transactions, fetch from API summary
                 if (txIncome > 0) {
@@ -88,7 +136,7 @@ export default function SpendingInsights() {
                 const catMap: Record<string, number> = {};
                 expenses.forEach((t: any) => {
                     const cat = t.category || 'Other';
-                    catMap[cat] = (catMap[cat] || 0) + parseFloat(t.amount);
+                    catMap[cat] = (catMap[cat] || 0) + t._normalizedAmount;
                 });
 
                 // Use income as total budget, distribute proportionally; fallback to 1.2x spending
@@ -140,7 +188,7 @@ export default function SpendingInsights() {
 
     useEffect(() => {
         if (!loading && currentExpenses.length > 0) {
-            loadAIAnalysis();
+            loadAIAnalysis(true);
         }
     }, [loading, currentExpenses.length]);
 
@@ -312,6 +360,44 @@ export default function SpendingInsights() {
                             </div>
                         );
                     })}
+                </div>
+            </motion.div>
+
+            {/* Expense transactions list */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
+                className="card-glow p-5" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.85)' }}>
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Expense Transactions</h3>
+                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{expenseTxns.length} total</span>
+                </div>
+                <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1">
+                    {expenseTxns.map((tx) => (
+                        <div key={tx.id} className="flex items-center justify-between rounded-lg p-3"
+                            style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)' }}>
+                            <div>
+                                <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{tx.description}</p>
+                                <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                    <span className="text-[10px] px-2 py-0.5 rounded-full"
+                                        style={{ background: 'rgba(0,212,255,0.08)', border: '1px solid rgba(0,212,255,0.18)', color: 'var(--aqua)' }}>
+                                        {tx.category}
+                                    </span>
+                                    {tx.source === 'pdf' ? (
+                                        <span className="text-[10px] px-2 py-0.5 rounded-full"
+                                            style={{ background: 'rgba(168,85,247,0.08)', border: '1px solid rgba(168,85,247,0.2)', color: '#a855f7' }}>
+                                            PDF {tx.source_document ? `· ${tx.source_document}` : ''}
+                                        </span>
+                                    ) : (
+                                        <span className="text-[10px] px-2 py-0.5 rounded-full"
+                                            style={{ background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.15)', color: '#10b981' }}>
+                                            Manual
+                                        </span>
+                                    )}
+                                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{tx.date}</span>
+                                </div>
+                            </div>
+                            <p className="text-sm font-bold" style={{ color: '#ef4444' }}>-{formatFullCurrency(tx.amount)}</p>
+                        </div>
+                    ))}
                 </div>
             </motion.div>
 

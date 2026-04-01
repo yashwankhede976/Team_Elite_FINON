@@ -271,70 +271,31 @@ RULES:
 - For long-term (5+yr): suggest SIP in equity mutual funds, index funds, hybrid growth funds
 """
 
-    # Deterministic Goal Planning Rules (LLM removed for performance & rate-limit safety)
-    result = _goal_plan_fallback(ctx, "Calculated using deterministic financial rules.")
-    
-    # Update feasibility based on savings gap
-    total_recommended = 0
-    for g in result['goals_analysis']:
-        gap = g['savings_gap']
-        delay = g['delay_months']
-        
-        if gap <= 0 and delay <= 0:
-            g['feasibility_pct'] = 95
-            g['achievement_probability_pct'] = 90
-            g['feasibility_status'] = 'Highly Feasible'
-            g['probability_explanation'] = "You are currently meeting the required monthly contributions."
-            g['timeline_category'] = 'short-term' if g['required_monthly'] > 0 else 'long-term'
-        elif gap < (ctx['disposable_income'] * 0.5):
-            g['feasibility_pct'] = 60
-            g['achievement_probability_pct'] = 65
-            g['feasibility_status'] = 'Moderately Feasible'
-            g['probability_explanation'] = f"You have a savings gap of ₹{gap:,.0f}/mo, but your disposable income can cover it if you adjust your budget."
-            g['budget_suggestions'] = [f"Reallocate ₹{gap:,.0f} from discretionary spending to this goal."]
-        else:
-            g['feasibility_pct'] = 25
-            g['achievement_probability_pct'] = 30
-            g['feasibility_status'] = 'Difficult Under Current Conditions'
-            g['probability_explanation'] = "The required monthly contribution exceeds your safe limits."
-            g['delay_months'] = int((gap * 12) / max(1, ctx['disposable_income']))
-            g['budget_suggestions'] = ["Consider extending the deadline or reducing the target amount."]
-            
-        total_recommended += g['required_monthly']
-        
-        # Populate Prioritization Rank
-        result['prioritization']['ranked_goals'].append({
-            "goal_id": g['goal_id'],
-            "rank": 1 if g['feasibility_pct'] > 80 else 2,
-            "recommended_monthly_allocation": g['required_monthly'],
-            "reason": g['probability_explanation']
-        })
+    try:
+        raw = generate_text(
+            user_prompt=prompt,
+            max_output_tokens=1400,
+        )
+        raw = strip_json_fences(raw)
 
-    result['prioritization']['total_recommended_monthly'] = total_recommended
-    result['prioritization']['over_allocated'] = total_recommended > ctx['disposable_income']
-    result['prioritization']['strategy_summary'] = "Focus on closing savings gaps for high priority, short-term goals first."
-    
-    # Simple investment suggestion based on feasibility
-    result['investment_suggestions'] = [{
-        "goal_id": g['id'],
-        "goal_title": g['title'],
-        "suggestions": [{
-            "type": "SIP in Index Fund" if g['months_left'] > 36 else "Recurring Deposit",
-            "why_it_fits": "Best risk-adjusted return for this timeline.",
-            "risk_level": "Moderate" if g['months_left'] > 36 else "Low",
-            "expected_return_range": "10-12% p.a." if g['months_left'] > 36 else "6-7% p.a.",
-            "liquidity": "High",
-            "timeline_fit": "Perfect match"
-        }]
-    } for g in ctx['goals']]
+        result = json.loads(raw.strip())
 
-    result['overall_summary'] = "Your financial goals have been analyzed successfully based on your current savings and income patterns."
-    result['degraded'] = False
+        # Cache result
+        GoalPlanAnalysis.objects.create(user=user, analysis_data=result)
 
-    # Cache result
-    GoalPlanAnalysis.objects.create(user=user, analysis_data=result)
+        return result
 
-    return result
+    except LLMServiceBusyError:
+        return _goal_plan_fallback(
+            ctx,
+            "AI analysis is temporarily busy. Showing a safe fallback plan. Please try again shortly.",
+        )
+    except Exception as e:
+        print(f"Goal planning analysis failed: {e}")
+        return _goal_plan_fallback(
+            ctx,
+            "Goal planning analysis is temporarily unavailable. Showing a safe fallback plan.",
+        )
 
 
 def simulate_income_change(user, change_pct):

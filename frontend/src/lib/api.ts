@@ -1,5 +1,5 @@
 /**
- * FINON API Service Layer
+ * Finexa API Service Layer
  * Base URL: http://localhost:8000
  */
 
@@ -94,17 +94,17 @@ function normalizeSpendingAnalysis(data: any): SpendingAnalysisResponse {
 // ─── Token helpers ──────────────────────────────────────────────
 function getTokens() {
     return {
-        access: localStorage.getItem('finon_access') || '',
-        refresh: localStorage.getItem('finon_refresh') || '',
+        access: localStorage.getItem('finexa_access') || '',
+        refresh: localStorage.getItem('finexa_refresh') || '',
     };
 }
 function saveTokens(access: string, refresh: string) {
-    localStorage.setItem('finon_access', access);
-    localStorage.setItem('finon_refresh', refresh);
+    localStorage.setItem('finexa_access', access);
+    localStorage.setItem('finexa_refresh', refresh);
 }
 function clearTokens() {
-    localStorage.removeItem('finon_access');
-    localStorage.removeItem('finon_refresh');
+    localStorage.removeItem('finexa_access');
+    localStorage.removeItem('finexa_refresh');
 }
 
 // ─── Core fetch wrapper ─────────────────────────────────────────
@@ -133,7 +133,7 @@ async function apiFetch<T>(
         clearTokens();
         // Don't hard-redirect — let components handle the error gracefully
         // Only redirect if there's no stored user session at all
-        const storedUser = localStorage.getItem('finon_user');
+        const storedUser = localStorage.getItem('finexa_user');
         if (!storedUser) {
             window.location.href = '/login';
         }
@@ -279,6 +279,9 @@ export const TransactionsAPI = {
 
     create: (data: { amount: number; category: string; type: 'income' | 'expense'; description: string; date: string }) =>
         apiFetch<any>('/api/transactions/', { method: 'POST', body: JSON.stringify(data) }),
+
+    bulkCreate: (data: Array<{ amount: number; category: string; type: 'income' | 'expense'; description: string; date: string; source?: string; source_document?: string }>) =>
+        apiFetch<any>('/api/transactions/bulk/', { method: 'POST', body: JSON.stringify(data) }),
 };
 
 // ─── Goals API ──────────────────────────────────────────────────

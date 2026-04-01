@@ -1,0 +1,2 @@
+Total: 175
+[{'id': 189, 'amount': Decimal('10000.00'), 'source_document': ''}, {'id': 188, 'amount': Decimal('10.50'), 'source_document': ''}, {'id': 187, 'amount': Decimal('10.50'), 'source_document': ''}, {'id': 186, 'amount': Decimal('250.00'), 'source_document': 'lastmonth.pdf'}, {'id': 185, 'amount': Decimal('1000.00'), 'source_document': ''}]

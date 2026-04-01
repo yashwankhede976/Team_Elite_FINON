@@ -2,6 +2,7 @@
 
 import io
 import json
+import re
 from datetime import datetime
 import mimetypes
 import os
@@ -118,6 +119,10 @@ JSON:"""
         
         data = json.loads(json_str.strip())
         return data
+    except json.JSONDecodeError as e:
+        print(f"JSON parse error: {e}")
+        # Return raw response if JSON parsing fails
+        return {"raw": json_str, "error": "Failed to parse JSON"}
     except LLMServiceBusyError:
         print("WARNING: AI provider quota exceeded or busy. Falling back to mock extraction for hackathon demo...")
         # Fallback to mock extraction so the demo doesn't crash
@@ -135,12 +140,6 @@ JSON:"""
             "date": "2026-03-01"
         }
         return mock_data
-    
-    except json.JSONDecodeError as e:
-        print(f"JSON parse error: {e}")
-        # Return raw response if JSON parsing fails
-        return {"raw": json_str, "error": "Failed to parse JSON"}
-    
     except Exception as e:
         print(f"LLM extraction failed: {str(e)}. Falling back to mock...")
         mock_data = {
@@ -151,6 +150,95 @@ JSON:"""
             "date": "2026-03-01"
         }
         return mock_data
+
+
+def _parse_amount(value):
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    cleaned = re.sub(r"[^\d.\-]", "", str(value))
+    if not cleaned:
+        return None
+    try:
+        return float(cleaned)
+    except Exception:
+        return None
+
+
+def _fallback_extract_expenses(raw_text: str):
+    """Best-effort extraction from raw statement text when LLM output is empty.
+
+    This parser intentionally keeps rules simple and conservative to avoid
+    producing noisy transactions.
+    """
+    if not raw_text:
+        return []
+
+    expenses = []
+    lines = [ln.strip() for ln in str(raw_text).splitlines() if ln and ln.strip()]
+    amount_pattern = re.compile(r"(?:₹|rs\.?|inr)?\s*([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{1,2})|[0-9]+(?:\.[0-9]{1,2})?)", re.IGNORECASE)
+    date_pattern = re.compile(r"\b(\d{1,2}[\-/]\d{1,2}[\-/]\d{2,4})\b")
+
+    for line in lines:
+        amount_matches = amount_pattern.findall(line)
+        if not amount_matches:
+            continue
+
+        # Pick the largest number from line to reduce false positives.
+        parsed_amounts = []
+        for match in amount_matches:
+            value = _parse_amount(match)
+            if value is not None and value > 0:
+                parsed_amounts.append(value)
+        if not parsed_amounts:
+            continue
+
+        amount = max(parsed_amounts)
+        date_match = date_pattern.search(line)
+        exp_date = date_match.group(1) if date_match else None
+
+        # Keep short but meaningful description from the line.
+        description = re.sub(amount_pattern, "", line).strip(" -:|\t")
+        if not description:
+            description = "Statement Expense"
+
+        expenses.append({
+            "item": description[:120],
+            "amount": amount,
+            "category": "Other",
+            "date": exp_date,
+        })
+
+    return expenses
+
+
+def normalize_extracted_expenses(structured_data, raw_text: str):
+    """Return a clean expenses list from LLM output, with text-based fallback."""
+    expenses = []
+    if isinstance(structured_data, dict):
+        raw_expenses = structured_data.get("expenses", [])
+        if isinstance(raw_expenses, list):
+            expenses = raw_expenses
+
+    normalized = []
+    for exp in expenses:
+        if not isinstance(exp, dict):
+            continue
+        amount = _parse_amount(exp.get("amount"))
+        if amount is None or amount <= 0:
+            continue
+        normalized.append({
+            "item": exp.get("item") or exp.get("description") or "Statement Expense",
+            "amount": amount,
+            "category": exp.get("category") or "Other",
+            "date": exp.get("date"),
+        })
+
+    if normalized:
+        return normalized
+
+    return _fallback_extract_expenses(raw_text)
 
 
 # ---------- Save document in MongoDB ----------

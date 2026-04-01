@@ -11,6 +11,7 @@ from .serializers import ChatMessageSerializer, ChatSessionSerializer, DocumentS
 from .services.expense_extraction import (
     extract_text_from_uploaded_file,
     call_llm_for_expense_extraction,
+    normalize_extracted_expenses,
     save_expense_document_to_mongo,
     get_expense_document_by_id,
 )
@@ -112,18 +113,35 @@ class DocumentProcessAPIView(APIView):
         created_tx_count = 0
         try:
             from transactions.models import Transaction as TxModel
-            expenses_list = structured_data.get("expenses", []) if isinstance(structured_data, dict) else []
+            expenses_list = normalize_extracted_expenses(structured_data, raw_text)
             for exp in expenses_list:
                 item_name = exp.get("item") or exp.get("description") or "PDF Expense"
                 amount_val = exp.get("amount", 0)
                 cat = exp.get("category", "Other")
-                if amount_val and float(amount_val) > 0:
+                
+                # Try to get date from individual expense or document root
+                date_str = exp.get("date") or structured_data.get("date")
+                parsed_date = timezone.now()
+                if date_str:
+                    try:
+                        from dateutil import parser
+                        parsed_date = parser.parse(date_str)
+                    except Exception:
+                        pass
+                
+                try:
+                    parsed_amt = float(amount_val)
+                except (ValueError, TypeError):
+                    parsed_amt = 0.0
+
+                if parsed_amt > 0:
                     TxModel.objects.create(
                         user=request.user,
                         type="expense",
                         category=cat,
-                        amount=float(amount_val),
+                        amount=parsed_amt,
                         description=item_name,
+                        date=parsed_date,
                         source="pdf",
                         source_document=uploaded_file.name,
                     )

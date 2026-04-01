@@ -6,6 +6,31 @@ from decimal import Decimal
 from .models import Transaction
 from .serializers import TransactionSerializer
 
+class TransactionBulkCreateView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        data = request.data
+        if not isinstance(data, list):
+            return Response({"error": "Expected a list of transactions"}, status=400)
+        
+        tx_list = []
+        for item in data:
+            tx = Transaction(
+                user=request.user,
+                amount=item.get("amount", 0),
+                type=item.get("type", "expense"),
+                category=item.get("category", "Other"),
+                description=item.get("description", "Uploaded Document"),
+                date=item.get("date", timezone.now().date()),
+                source=item.get("source", "pdf"),
+                source_document=item.get("source_document", ""),
+            )
+            tx_list.append(tx)
+        
+        Transaction.objects.bulk_create(tx_list)
+        return Response({"message": f"Imported {len(tx_list)} transactions successfully"}, status=201)
+
 
 class TransactionListCreateView(generics.ListCreateAPIView):
     serializer_class = TransactionSerializer
