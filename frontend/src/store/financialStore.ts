@@ -135,6 +135,6 @@ export const useFinancialStore = create<FinancialState>()(
                 cards: [],
             }),
         }),
-        { name: 'finexa-v2-state' }
+        { name: 'finon-v2-state' }
     )
 );

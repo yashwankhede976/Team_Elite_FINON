@@ -100,8 +100,8 @@ export default function Onboarding() {
             >
                 {/* Logo */}
                 <div className="flex items-center gap-3 mb-6 justify-center">
-                    <img src="/logo.png" alt="Finexa" className="w-10 h-10 rounded-xl object-contain" />
-                    <span className="font-bold text-2xl" style={{ color: isDark ? '#fff' : '#0f172a' }}>Finexa</span>
+                    <img src="/logo.png" alt="FINON" className="w-10 h-10 rounded-xl object-contain" />
+                    <span className="font-bold text-2xl" style={{ color: isDark ? '#fff' : '#0f172a' }}>FINON</span>
                 </div>
 
                 {/* Progress bar */}

@@ -7,41 +7,34 @@ def generate_saving_suggestions(expense_data: dict) -> dict:
     """
     Generate saving insights based on structured expense JSON.
     """
-    system_prompt = """
-    You are Finexa AI, a financial planning assistant.
-    Based on the user's expense history, provide smart and practical suggestions
-    to help reduce expenses and increase savings.
-
-    Return ONLY JSON with the schema:
-    {
-      "suggestions": [
-        "string",
-        "string",
-        "string"
-      ]
-    }
-
-    Suggestions should be:
-    - Personalized to spending categories and merchants
-    - Actionable and measurable
-    - Not generic like 'save money', but specific
-    - Consider user's financial safety and sustainability
-    """
-
-    try:
-        raw_output = generate_text(
-            user_prompt=f"Expense data:\n{json.dumps(expense_data)}",
-            system_prompt=system_prompt,
-            max_output_tokens=900,
-        )
-        raw_output = strip_json_fences(raw_output)
+    # Deterministic generation to avoid LLM rate-limit quota
+    suggestions = []
+    
+    expenses_list = expense_data.get("expenses", [])
+    cat_spend = {}
+    
+    for row in expenses_list:
+        try:
+            amt = float(row.get("amount", 0))
+        except:
+            amt = 0.0
+        cat = row.get("category", "Other")
+        cat_spend[cat] = cat_spend.get(cat, 0) + amt
         
-        return json.loads(raw_output.strip())
-    except LLMServiceBusyError:
-        return {"suggestions": [], "error": "API quota exceeded"}
-    
-    except json.JSONDecodeError:
-        return {"suggestions": [], "raw_output": raw_output}
-    
-    except Exception as e:
-        return {"suggestions": [], "error": str(e)}
+    for cat, total in cat_spend.items():
+        if cat in ["Food", "Dining", "Zomato", "Swiggy"] and total > 2000:
+            suggestions.append(f"You spent ₹{total:,.0f} on dining. Cooking at home 2 more days a week could save you ₹{total*0.3:,.0f}/month.")
+        elif cat in ["Shopping", "Amazon", "Flipkart"] and total > 3000:
+            suggestions.append(f"You spent ₹{total:,.0f} on shopping. Implement a 48-hour cool-off rule before buying non-essentials.")
+        elif cat in ["Entertainment", "Movies", "Netflix"] and total > 1000:
+            suggestions.append(f"You spent ₹{total:,.0f} on entertainment. Consider auditing digital subscriptions you rarely use.")
+            
+    if not suggestions:
+        if expenses_list:
+            suggestions.append("Track every expense religiously to build better financial awareness.")
+            suggestions.append("Apply the 50/30/20 budget framework to manage needs, wants, and savings.")
+        else:
+            suggestions.append("Log your expenses to get personalized saving suggestions.")
+            
+    # Ensure exactly 3 strong suggestions maximum
+    return {"suggestions": suggestions[:3]}

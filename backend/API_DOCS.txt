@@ -1,6 +1,6 @@
-# Finexa Backend API Documentation
+# FINON Backend API Documentation
 
-> Complete API reference for the Finexa financial management platform
+> Complete API reference for the FINON financial management platform
 
 **Base URL:** `http://localhost:8000` (Development)
 

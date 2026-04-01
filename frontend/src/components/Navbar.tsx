@@ -46,14 +46,14 @@ export default function Navbar() {
                         <div className="absolute -inset-1.5 rounded-full opacity-60 group-hover:opacity-100 transition-opacity duration-300"
                             style={{ background: 'radial-gradient(circle, rgba(168,85,247,0.55), transparent 70%)', filter: 'blur(6px)', animation: 'glowPulse 3s ease-in-out infinite' }} />
                     )}
-                    <img src="/logo.png" alt="Finexa" className="relative w-9 h-9 object-contain"
+                    <img src="/logo.png" alt="FINON" className="relative w-9 h-9 object-contain"
                         style={{ filter: isDark ? 'drop-shadow(0 0 10px rgba(168,85,247,0.9))' : 'none' }} />
                 </div>
                 <span className="font-display font-extrabold text-xl"
                     style={isDark
                         ? { background: 'linear-gradient(120deg,#7c3aed 0%,#a855f7 50%,#c084fc 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', letterSpacing: '-0.01em' }
                         : { color: '#0a0a0a', letterSpacing: '-0.01em' }}>
-                    Finexa
+                    FINON
                 </span>
             </Link>
 

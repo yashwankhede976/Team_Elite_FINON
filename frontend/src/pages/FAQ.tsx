@@ -7,9 +7,9 @@ const FAQS = [
     {
         category: 'Getting Started',
         items: [
-            { q: 'Is Finexa free to use?', a: 'Yes — the core app is completely free. You start with 100,000 AI credits on sign-up, which is more than enough to get a full financial health analysis, multiple AI Coach chats, and risk simulations. Additional credits are available as one-time purchases with no recurring fees.' },
-            { q: 'Do I need a real bank account to try Finexa?', a: 'No. Simply sign up with your email, complete the onboarding flow, and start using Finexa right away. Upload a bank statement PDF to auto-import your transactions, or add them manually.' },
-            { q: 'What file formats can I upload?', a: 'Finexa supports standard bank statement PDFs exported from major Indian banks. The AI parses the PDF, extracts all transactions, and structures them automatically — no manual entry needed.' },
+            { q: 'Is FINON free to use?', a: 'Yes — the core app is completely free. You start with 100,000 AI credits on sign-up, which is more than enough to get a full financial health analysis, multiple AI Coach chats, and risk simulations. Additional credits are available as one-time purchases with no recurring fees.' },
+            { q: 'Do I need a real bank account to try FINON?', a: 'No. Simply sign up with your email, complete the onboarding flow, and start using FINON right away. Upload a bank statement PDF to auto-import your transactions, or add them manually.' },
+            { q: 'What file formats can I upload?', a: 'FINON supports standard bank statement PDFs exported from major Indian banks. The AI parses the PDF, extracts all transactions, and structures them automatically — no manual entry needed.' },
         ],
     },
     {
@@ -23,7 +23,7 @@ const FAQS = [
     {
         category: 'Privacy & Security',
         items: [
-            { q: 'Is my financial data secure?', a: 'Absolutely. Finexa is privacy-first — your data is never sold to third parties. Bank statement PDFs are processed and immediately discarded; only structured transaction data is kept. All data is encrypted at rest and in transit.' },
+            { q: 'Is my financial data secure?', a: 'Absolutely. FINON is privacy-first — your data is never sold to third parties. Bank statement PDFs are processed and immediately discarded; only structured transaction data is kept. All data is encrypted at rest and in transit.' },
             { q: 'Can I delete my data?', a: 'Yes. You can delete all your data at any time from Settings → Account → Delete Account. This permanently removes everything from our servers.' },
         ],
     },
@@ -31,7 +31,7 @@ const FAQS = [
         category: 'Features',
         items: [
             { q: 'How is my Financial Health Score calculated?', a: 'Your score (0–100) covers four dimensions: savings rate, emergency fund coverage, debt-to-income ratio, and spending discipline. It updates automatically as your data changes.' },
-            { q: 'Can I use Finexa without uploading documents?', a: 'Yes. You can manually enter financial details, set goals, track habits, and chat with the AI coach. Document upload just speeds up the initial setup.' },
+            { q: 'Can I use FINON without uploading documents?', a: 'Yes. You can manually enter financial details, set goals, track habits, and chat with the AI coach. Document upload just speeds up the initial setup.' },
         ],
     },
 ];
@@ -61,7 +61,7 @@ export default function FAQ() {
                         Frequently Asked <span className="text-gradient">Questions</span>
                     </h1>
                     <p className="text-sm text-3">
-                        Everything you need to know about Finexa
+                        Everything you need to know about FINON
                     </p>
                 </motion.div>
 

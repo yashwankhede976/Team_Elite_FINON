@@ -184,6 +184,12 @@ const TESTIMONIALS = [
     { name: 'Ananya S.', role: 'Marketing Manager', text: 'ELI-15 mode explains every financial concept so clearly. Finally understand my money.', r: 5 },
 ];
 
+const TEAM = [
+    { name: 'Atharva', role: 'Lead Architect', desc: 'Built the core AI and deterministic rules engine for instant offline analytics.' },
+    { name: 'Teju', role: 'Product Visionary', desc: 'Designed the beautiful dark-mode interface and dynamic financial tracking experience.' },
+    { name: 'Rohan', role: 'Data Scientist', desc: 'Engineered the transaction classification model and risk simulation architecture.' },
+];
+
 /* ─── MAIN PAGE ─── */
 export default function Landing() {
     return (
@@ -305,7 +311,7 @@ export default function Landing() {
 
                 <div className="relative max-w-6xl mx-auto px-6">
                     <div className="text-center mb-14">
-                        <div className="badge inline-flex mb-5">Why Choose Finexa</div>
+                        <div className="badge inline-flex mb-5">Why Choose FINON</div>
                         <h2 className="font-display font-black text-1 leading-tight mb-4"
                             style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}>
                             Powerful Features.<br /><span className="text-gradient">Total Financial Control.</span>
@@ -363,7 +369,7 @@ export default function Landing() {
                         <div className="card-glow p-5 space-y-3">
                             <div className="flex items-center gap-3 pb-4" style={{ borderBottom: '1px solid rgba(168,85,247,0.12)' }}>
                                 <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)' }}><Bot size={15} className="text-white" /></div>
-                                <div><p className="text-sm font-semibold text-1">Finexa AI Coach</p><div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-green-400" /><p className="text-[10px] text-3">Online · 97,100 credits</p></div></div>
+                                <div><p className="text-sm font-semibold text-1">FINON AI Coach</p><div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-green-400" /><p className="text-[10px] text-3">Online · 97,100 credits</p></div></div>
                             </div>
                             {[
                                 { r: 'user', t: 'What is my financial health score?' },
@@ -478,6 +484,35 @@ export default function Landing() {
                 </div>
             </section>
 
+            {/* ═══ TEAM SECTION ═══ */}
+            <section id="team" className="py-24 px-6 max-w-5xl mx-auto">
+                <div className="text-center mb-14">
+                    <div className="badge inline-flex mb-5">Built by Humans</div>
+                    <h2 className="font-display font-black text-1" style={{ fontSize: 'clamp(2rem, 5vw, 3.2rem)' }}>
+                        Meet <span className="text-gradient">Team Elite</span>
+                    </h2>
+                    <p className="text-base max-w-xl mx-auto mt-4" style={{ color: 'rgba(200,190,255,0.6)' }}>
+                        We are passionate developers building privacy-first financial intelligence tools to empower everyday people.
+                    </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    {TEAM.map((member, i) => (
+                        <motion.div key={member.name} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }} transition={{ delay: i * 0.15 }}
+                            className="card p-8 flex flex-col items-center text-center relative overflow-hidden group">
+                            <div className="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <div className="w-20 h-20 rounded-full mb-5 flex items-center justify-center font-display font-bold text-3xl text-white shadow-xl"
+                                style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)', border: '2px solid rgba(168,85,247,0.3)' }}>
+                                {member.name.charAt(0)}
+                            </div>
+                            <h3 className="font-bold text-xl text-1 mb-1">{member.name}</h3>
+                            <p className="text-xs font-semibold uppercase tracking-widest text-purple-400 mb-4">{member.role}</p>
+                            <p className="text-sm leading-relaxed" style={{ color: 'rgba(200,190,255,0.7)' }}>{member.desc}</p>
+                        </motion.div>
+                    ))}
+                </div>
+            </section>
+
             {/* ═══ CTA ═══ */}
             <section className="py-24 px-6 relative overflow-hidden"
                 style={{ background: 'linear-gradient(180deg, var(--bg) 0%, #110830 50%, var(--bg) 100%)' }}>
@@ -515,17 +550,17 @@ export default function Landing() {
                         <div className="md:col-span-2">
                             <div className="flex items-center gap-2.5 mb-3">
                                 <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)' }}><TrendingUp size={12} className="text-white" /></div>
-                                <span className="font-display font-bold text-lg text-gradient">finexa</span>
+                                <span className="font-display font-bold text-lg text-gradient">finon</span>
                             </div>
                             <p className="text-xs leading-relaxed max-w-xs" style={{ color: 'rgba(160,148,210,0.45)' }}>AI-powered financial coaching. Privacy-first. Educational only. Not investment advice.</p>
                         </div>
                         <div>
                             <p className="text-xs font-semibold text-1 mb-3">Product</p>
                             <div className="space-y-2">
-                                {['Features', 'How It Works', 'AI Coach', 'Wallet'].map(l => (
-                                    <a key={l} href="#features" className="block text-xs transition-colors" style={{ color: 'rgba(160,148,210,0.45)' }}
+                                {[{name: 'Features', link: '#features'}, {name: 'How It Works', link: '#how'}, {name: 'Team', link: '#team'}].map(l => (
+                                    <a key={l.name} href={l.link} className="block text-xs transition-colors" style={{ color: 'rgba(160,148,210,0.45)' }}
                                         onMouseEnter={e => e.currentTarget.style.color = 'rgba(200,190,255,0.7)'}
-                                        onMouseLeave={e => e.currentTarget.style.color = 'rgba(160,148,210,0.45)'}>{l}</a>
+                                        onMouseLeave={e => e.currentTarget.style.color = 'rgba(160,148,210,0.45)'}>{l.name}</a>
                                 ))}
                             </div>
                         </div>
@@ -542,7 +577,7 @@ export default function Landing() {
                     </div>
                     <div className="flex items-center justify-between pt-5" style={{ borderTop: '1px solid rgba(168,85,247,0.1)' }}>
                         <p className="text-[11px]" style={{ color: 'rgba(160,148,210,0.35)' }}>Not investment advice. Educational purposes only.</p>
-                        <p className="text-[11px]" style={{ color: 'rgba(160,148,210,0.35)' }}>&copy; 2026 Finexa.</p>
+                        <p className="text-[11px]" style={{ color: 'rgba(160,148,210,0.35)' }}>&copy; 2026 FINON.</p>
                     </div>
                 </div>
             </footer>

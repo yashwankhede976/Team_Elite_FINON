@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { PlusCircle, TrendingUp, TrendingDown, Filter, FileText, Loader2, ArrowUpDown } from 'lucide-react';
+import { PlusCircle, TrendingUp, TrendingDown, Filter, FileText, Loader2, ArrowUpDown, UploadCloud, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { TransactionsAPI } from '../../lib/api';
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -105,6 +106,29 @@ export default function Transactions() {
                     <PlusCircle size={16} /> Add Transaction
                 </button>
             </div>
+
+            {/* UPI Analyser Banner */}
+            <Link to="/dashboard/upi-analyser">
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center justify-between p-4 rounded-2xl cursor-pointer hover:scale-[1.01] transition-transform"
+                    style={{ background: 'linear-gradient(135deg, rgba(168,85,247,0.12) 0%, rgba(99,102,241,0.08) 100%)', border: '1px solid rgba(168,85,247,0.25)' }}>
+                    <div className="flex items-center gap-3">
+                        <div className="p-2.5 rounded-xl" style={{ background: 'rgba(168,85,247,0.15)' }}>
+                            <UploadCloud size={18} className="text-purple-400" />
+                        </div>
+                        <div>
+                            <p className="text-sm font-bold text-purple-300">Upload UPI Statement for Deep Analysis</p>
+                            <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
+                                PDF & CSV · Auto-categorised · Subscription detection · AI savings tips
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold text-purple-300"
+                        style={{ background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.2)' }}>
+                        <Sparkles size={12} /> Analyse
+                    </div>
+                </motion.div>
+            </Link>
 
             {/* Summary */}
             <div className="grid grid-cols-3 gap-4">

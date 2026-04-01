@@ -109,11 +109,11 @@ export default function SignUp() {
                                         <div className="absolute -inset-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                                             style={{ background: 'radial-gradient(circle,rgba(168,85,247,0.4),transparent 70%)', filter: 'blur(7px)' }} />
                                     )}
-                                    <img src="/logo.png" alt="Finexa" className="relative w-8 h-8 object-contain"
+                                    <img src="/logo.png" alt="FINON" className="relative w-8 h-8 object-contain"
                                         style={{ filter: isDark ? 'drop-shadow(0 0 8px rgba(168,85,247,0.85))' : 'none' }} />
                                 </div>
                                 <span className="text-[17px] font-semibold tracking-tight" style={logoText}>
-                                    Finexa
+                                    FINON
                                 </span>
                             </Link>
                         </motion.div>

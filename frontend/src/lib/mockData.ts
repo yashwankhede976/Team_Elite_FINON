@@ -82,7 +82,7 @@ export const educationCards = [
 ];
 
 export const aiResponses: Record<string, string> = {
-    default: "I'm your Finexa AI Coach. I can help you with your financial health score, budgeting strategies, savings goals, and general financial education. What would you like to explore today?",
+    default: "I'm your FINON AI Coach. I can help you with your financial health score, budgeting strategies, savings goals, and general financial education. What would you like to explore today?",
     budget: "Based on your income of Rs 85,000, the 50/30/20 rule suggests: Rs 42,500 for needs, Rs 25,500 for wants, and Rs 17,000 for savings. You're currently saving Rs 30,500 — that's 35.9% of income, which is excellent! Your main overspend areas are Food & Dining and Entertainment.",
     score: "Your Financial Health Score of 74/100 is in the 'Good' range. It's calculated from: Income Stability (9/10), Expense Ratio (7/10), Savings Rate (8/10), Debt-to-Income (8/10), and Emergency Buffer (5/10). Your emergency fund is the key area to improve.",
     emergency: "You have approximately 2.2 months of emergency coverage. Financial experts recommend 3–6 months. To reach the 3-month target of Rs 163,500, you need Rs 43,500 more. At your current savings rate, that's about 1.5 months away — very close!",

@@ -53,7 +53,7 @@ function VirtualCard({ card, active, index, total, onRemove }: { card: CardInfo;
                             </div>
                             <div>
                                 <p className="text-white text-[10px] font-mono tracking-[0.3em] opacity-60 leading-none">PROTOCOL</p>
-                                <p className="text-white font-bold text-xs tracking-tight">FINEXA INSURED</p>
+                                <p className="text-white font-bold text-xs tracking-tight">FINON INSURED</p>
                             </div>
                         </div>
                         <CardChip />

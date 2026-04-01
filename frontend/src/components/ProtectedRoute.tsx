@@ -15,7 +15,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
                         <div className="absolute inset-2 rounded-full animate-pulse"
                             style={{ background: 'rgba(0,212,255,0.1)' }} />
                     </div>
-                    <p className="text-sm font-medium" style={{ color: 'var(--aqua)' }}>Loading Finexa...</p>
+                    <p className="text-sm font-medium" style={{ color: 'var(--aqua)' }}>Loading FINON...</p>
                 </div>
             </div>
         );

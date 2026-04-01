@@ -59,7 +59,7 @@ def chat_with_expense_data(question: str, expense_doc: dict) -> str:
     }
 
     system_prompt = """
-You are Finexa AI, an agentic financial decision assistant.
+You are FINON AI, an agentic financial decision assistant.
 
 Your role is to understand the user's financial profile, continuously track their balance, obligations, and spending patterns, 
 analyze financial risk, and provide clear YES/NO spending decisions, budget guidance, and personalized recommendations.

@@ -81,12 +81,12 @@ export default function ForgotPassword() {
                                             <div className="relative">
                                                 <div className="absolute -inset-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                                                     style={{ background: 'radial-gradient(circle,rgba(168,85,247,0.4),transparent 70%)', filter: 'blur(7px)' }} />
-                                                <img src="/logo.png" alt="Finexa" className="relative w-8 h-8 object-contain"
+                                                <img src="/logo.png" alt="FINON" className="relative w-8 h-8 object-contain"
                                                     style={{ filter: 'drop-shadow(0 0 8px rgba(168,85,247,0.85))' }} />
                                             </div>
                                             <span className="text-[17px] font-semibold tracking-tight"
                                                 style={{ background: 'linear-gradient(110deg,#fff 10%,#dcc6ff 55%,#c084fc 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                                                Finexa
+                                                FINON
                                             </span>
                                         </Link>
                                     </motion.div>

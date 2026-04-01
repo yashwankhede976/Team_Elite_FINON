@@ -77,7 +77,7 @@ class Agent:
     def _call_llm_for_plan(self, prompt: str) -> str:
         return generate_text(
             user_prompt=prompt,
-            system_prompt="You are Finexa AI agent that chooses which tool to call.",
+            system_prompt="You are FINON AI agent that chooses which tool to call.",
             model=self.model,
             temperature=0.0,
             max_output_tokens=300,

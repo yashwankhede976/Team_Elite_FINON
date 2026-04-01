@@ -7,7 +7,7 @@ const STEPS = [
         n: '01',
         title: 'Upload Your Bank Statement',
         tagline: 'Any bank · PDF or CSV · Instant extraction',
-        desc: 'Drop any bank statement and Finexa\'s AI parser extracts every transaction in seconds — no manual entry required. Supports 30+ Indian banks including HDFC, SBI, ICICI, Kotak, and Axis. Transactions are automatically sorted into 18 spending categories and stitched into a single timeline across multiple months.',
+        desc: 'Drop any bank statement and FINON\'s AI parser extracts every transaction in seconds — no manual entry required. Supports 30+ Indian banks including HDFC, SBI, ICICI, Kotak, and Axis. Transactions are automatically sorted into 18 spending categories and stitched into a single timeline across multiple months.',
         bullets: [
             'Upload PDF or CSV — done in under 10 seconds',
             'Auto-categorised into 18 spending buckets',
@@ -19,7 +19,7 @@ const STEPS = [
         n: '02',
         title: 'Get Deep AI Financial Insights',
         tagline: 'Health score · Anomaly alerts · Spending personality',
-        desc: 'Finexa analyses every transaction to compute your Financial Health Score (0–100), detect unusual spending patterns, identify your spending personality, and surface personalised recommendations based on your real income and lifestyle.',
+        desc: 'FINON analyses every transaction to compute your Financial Health Score (0–100), detect unusual spending patterns, identify your spending personality, and surface personalised recommendations based on your real income and lifestyle.',
         bullets: [
             'Financial Health Score updated with every upload',
             'Anomaly alerts flag unexpected charges or sudden spikes',
@@ -31,7 +31,7 @@ const STEPS = [
         n: '03',
         title: 'Build Better Financial Habits',
         tagline: 'AI coach · Goal tracker · Habit challenges',
-        desc: 'Turn insights into lasting change. Chat with your always-on AI Coach, set SMART savings goals, and join weekly habit challenges. Finexa tracks your progress and keeps you on track — so your goals don\'t remain just goals.',
+        desc: 'Turn insights into lasting change. Chat with your always-on AI Coach, set SMART savings goals, and join weekly habit challenges. FINON tracks your progress and keeps you on track — so your goals don\'t remain just goals.',
         bullets: [
             'AI Coach answers money questions in plain language, 24/7',
             'SMART goal builder with milestone tracking',
@@ -45,7 +45,7 @@ const FAQS = [
     { q: 'Which banks are supported?', a: '30+ Indian banks including HDFC, SBI, ICICI, Kotak, Axis, and more.' },
     { q: 'Is my data safe?', a: 'Yes — all data is encrypted at rest (AES-256) and in transit (TLS 1.3). We never sell or share your data.' },
     { q: 'What are AI credits?', a: 'Credits power AI features — each chat message or analysis consumes a small amount. New accounts start with 100,000 free credits.' },
-    { q: 'Can I upload multiple months?', a: 'Absolutely. Upload statements from multiple months and Finexa stitches them into one unified timeline.' },
+    { q: 'Can I upload multiple months?', a: 'Absolutely. Upload statements from multiple months and FINON stitches them into one unified timeline.' },
 ];
 
 export default function HowItWorks() {

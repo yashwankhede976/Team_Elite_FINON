@@ -1,5 +1,5 @@
 {
-  "name": "finexa",
+  "name": "finon",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -9,10 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@types/papaparse": "^5.5.2",
     "axios": "^1.13.6",
     "clsx": "^2.1.1",
     "framer-motion": "^11.11.0",
     "lucide-react": "^0.462.0",
+    "papaparse": "^5.5.3",
+    "pdfjs-dist": "^5.6.205",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.28.0",

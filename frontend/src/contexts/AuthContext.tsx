@@ -25,7 +25,7 @@ interface AuthCtx {
 }
 
 const AuthContext = createContext<AuthCtx | undefined>(undefined);
-const STORAGE_KEY = 'finexa_user';
+const STORAGE_KEY = 'finon_user';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<UserProfile | null>(null);
@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             try {
                 const res = await fetch(`${BASE_URL}/auth/me/`, {
                     signal: AbortSignal.timeout(2500),
-                    headers: { Authorization: `Bearer ${localStorage.getItem('finexa_access') || ''}` },
+                    headers: { Authorization: `Bearer ${localStorage.getItem('finon_access') || ''}` },
                 });
                 setIsBackendAvailable(res.status !== 0);
             } catch {
@@ -116,7 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
 
             // Offline fallback: check local users
-            const usersRaw = localStorage.getItem('finexa_local_users');
+            const usersRaw = localStorage.getItem('finon_local_users');
             const users: Array<UserProfile & { password: string }> = usersRaw ? JSON.parse(usersRaw) : [];
             const found = users.find(u => u.email === email && (u as any).password === password);
             if (!found) { setIsLoading(false); return { success: false, error: 'Invalid email or password' }; }
@@ -151,7 +151,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
 
             // Offline
-            const usersRaw = localStorage.getItem('finexa_local_users');
+            const usersRaw = localStorage.getItem('finon_local_users');
             const users: any[] = usersRaw ? JSON.parse(usersRaw) : [];
             if (users.find(u => u.email === email)) {
                 setIsLoading(false);
@@ -167,7 +167,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 onboarding_completed: false
             };
             users.push({ ...newUser, password });
-            localStorage.setItem('finexa_local_users', JSON.stringify(users));
+            localStorage.setItem('finon_local_users', JSON.stringify(users));
             setUser(newUser);
             localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser));
             setIsLoading(false);
@@ -184,12 +184,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const updated = { ...prev, ai_credits: (prev.ai_credits ?? 0) + amount };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
             // Also update in local users list if offline
-            const usersRaw = localStorage.getItem('finexa_local_users');
+            const usersRaw = localStorage.getItem('finon_local_users');
             if (usersRaw) {
                 const users = JSON.parse(usersRaw);
                 const idx = users.findIndex((u: any) => u.id === prev.id);
                 if (idx !== -1) { users[idx] = { ...users[idx], ai_credits: updated.ai_credits }; }
-                localStorage.setItem('finexa_local_users', JSON.stringify(users));
+                localStorage.setItem('finon_local_users', JSON.stringify(users));
             }
             return updated;
         });

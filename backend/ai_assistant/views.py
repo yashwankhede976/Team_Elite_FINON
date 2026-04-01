@@ -522,26 +522,54 @@ class BudgetAdviceAPIView(APIView):
             f"Category Breakdown:\n{spending_lines}"
         )
 
-        prompt = (
-            "You are a friendly personal finance advisor for an Indian user.\n"
-            "Analyze this budget data and give 4-5 specific, actionable tips.\n\n"
-            f"{context}\n\n"
-            "Rules:\n"
-            "- Compare to the 50/30/20 rule\n"
-            "- Mention specific categories where they can save\n"
-            "- Give a concrete monthly saving estimate per tip\n"
-            "- Be encouraging, not judgmental\n"
-            '- Output MUST be valid JSON array of objects:\n'
-            '  [{"tip": "string", "category": "string", "save_per_month": number}]\n'
-        )
-
-        try:
-            raw = generate_text(user_prompt=prompt, max_output_tokens=1200)
-            raw = strip_json_fences(raw)
-            tips = json.loads(raw.strip())
-            return Response({"tips": tips, "income": income, "expense": total_expense, "savings": savings})
-        except LLMServiceBusyError:
-            return Response({"tips": [{"tip": "AI service is busy. Try again later.", "category": "System", "save_per_month": 0}]})
-        except Exception as e:
-            print(f"Budget advice error: {e}")
-            return Response({"tips": [{"tip": "Could not generate advice right now.", "category": "System", "save_per_month": 0}]})
+        # Deterministic generation to avoid LLM rate-limit quota
+        tips = []
+        ideal_needs = income * 0.5
+        ideal_wants = income * 0.3
+        ideal_savings = income * 0.2
+        
+        # 1. Needs Check
+        if needs > ideal_needs:
+            excess = needs - ideal_needs
+            biggest_need_cat = max((k for k in cat_totals if k in needs_cats), key=cat_totals.get, default="Bills")
+            tips.append({
+                "tip": f"Your essential spending is {excess/income*100:.0f}% over the 50% ideal limit. Try auditing your {biggest_need_cat} expenses.",
+                "category": biggest_need_cat,
+                "save_per_month": round(excess * 0.3)
+            })
+            
+        # 2. Wants Check
+        if wants > ideal_wants:
+            excess = wants - ideal_wants
+            biggest_want_cat = max((k for k in cat_totals if k not in needs_cats), key=cat_totals.get, default="Entertainment")
+            tips.append({
+                "tip": f"Your discretionary spending on {biggest_want_cat} is high. Cut back to reach the 30% guideline.",
+                "category": biggest_want_cat,
+                "save_per_month": round(excess * 0.5)
+            })
+            
+        # 3. Savings Check
+        if savings < ideal_savings:
+            shortfall = ideal_savings - max(0, savings)
+            tips.append({
+                "tip": f"You are saving {(max(0, savings)/income)*100:.0f}%, which is below the 20% rule. Automate a transfer on payday.",
+                "category": "Savings",
+                "save_per_month": round(shortfall)
+            })
+            
+        # 4. Fallback positive tips
+        if not tips:
+            tips.append({
+                "tip": "Great job! Your spending perfectly aligns with the 50/30/20 rule. Consider investing excess cash.",
+                "category": "Investment",
+                "save_per_month": 0
+            })
+            
+        if len(tips) < 3 and wants > 0:
+            tips.append({
+                "tip": "Cancel unused digital subscriptions or negotiate better internet/phone plans.",
+                "category": "Bills",
+                "save_per_month": round(wants * 0.05)
+            })
+            
+        return Response({"tips": tips, "income": income, "expense": total_expense, "savings": savings})

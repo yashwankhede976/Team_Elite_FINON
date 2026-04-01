@@ -45,7 +45,7 @@ function SettingRow({ label, desc, children, compact = false }: { label: string;
 
 export default function Settings() {
     const { user, logout } = useAuth();
-    const { isDark, toggle } = useTheme();
+    const { isDark, theme, setTheme, toggle } = useTheme();
     const navigate = useNavigate();
 
     const [tab, setTab] = useState('profile');
@@ -213,7 +213,7 @@ export default function Settings() {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'finexa-data-export.json';
+            a.download = 'finon-data-export.json';
             a.click();
             URL.revokeObjectURL(url);
             showSaved('Data exported successfully');
@@ -371,7 +371,7 @@ export default function Settings() {
                                 <h3 className="font-semibold text-1 mb-4 pb-3" style={{ borderBottom: '1px solid var(--border)' }}>Privacy & Security</h3>
                                 {[
                                     { key: 'showBalance', label: 'Show Balance on Dashboard', desc: 'Display your balance on the overview card' },
-                                    { key: 'analyticsSharing', label: 'Usage Analytics', desc: 'Help improve Finexa with anonymous usage data' },
+                                    { key: 'analyticsSharing', label: 'Usage Analytics', desc: 'Help improve FINON with anonymous usage data' },
                                     { key: 'crashReports', label: 'Crash Reports', desc: 'Automatically send error reports to improve stability' },
                                 ].map(p => (
                                     <SettingRow key={p.key} label={p.label} desc={p.desc} compact>
@@ -435,14 +435,22 @@ export default function Settings() {
                                     </select>
                                 </SettingRow>
 
-                                {/* Accent preview */}
+                                {/* Accent selection */}
                                 <div className="mt-4 p-4 rounded-xl" style={{ background: 'var(--surface-2)' }}>
-                                    <p className="text-xs text-3 mb-3">Accent colour (coming soon)</p>
+                                    <p className="text-xs text-3 mb-3">Accent theme</p>
                                     <div className="flex gap-3">
-                                        {['#7c3aed', '#2563eb', '#059669', '#d97706', '#dc2626'].map(c => (
-                                            <button key={c} className="w-7 h-7 rounded-full ring-2 ring-offset-1 transition-all"
-                                                style={{ background: c, outline: c === '#7c3aed' ? `2px solid ${c}` : 'none', outlineOffset: 2, opacity: c === '#7c3aed' ? 1 : 0.4 }}
-                                                disabled />
+                                        <button onClick={() => { setTheme('dark'); SettingsAPI.update({ active_theme: 'dark' }).catch(() => {}); }}
+                                            className="w-7 h-7 rounded-full transition-all"
+                                            style={{ background: '#7c3aed', outline: (theme === 'dark' || theme === 'light') ? '2px solid #7c3aed' : 'none', outlineOffset: 2, opacity: (theme === 'dark' || theme === 'light') ? 1 : 0.4 }}
+                                        />
+                                        <button onClick={() => { setTheme('emerald'); SettingsAPI.update({ active_theme: 'emerald' }).catch(() => {}); }}
+                                            className="w-7 h-7 rounded-full transition-all"
+                                            style={{ background: '#059669', outline: theme === 'emerald' ? '2px solid #059669' : 'none', outlineOffset: 2, opacity: theme === 'emerald' ? 1 : 0.4 }}
+                                        />
+                                        {/* Other colors coming soon */}
+                                        {['#2563eb', '#d97706', '#dc2626'].map(c => (
+                                            <button key={c} className="w-7 h-7 rounded-full transition-all cursor-not-allowed"
+                                                style={{ background: c, opacity: 0.15 }} disabled title="Coming soon" />
                                         ))}
                                     </div>
                                 </div>
@@ -480,7 +488,7 @@ export default function Settings() {
                                         <button onClick={() => { logout(); navigate('/'); }}
                                             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all"
                                             style={{ background: 'rgba(239,68,68,0.04)', border: '1px solid rgba(239,68,68,0.15)', color: 'rgba(239,68,68,0.7)' }}>
-                                            <LogOut size={15} /> Sign out of Finexa
+                                            <LogOut size={15} /> Sign out of FINON
                                         </button>
                                     </div>
                                 </div>

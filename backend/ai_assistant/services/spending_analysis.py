@@ -47,53 +47,74 @@ def analyze_user_spending(user):
         desc = t.description or "Wallet txn"
         txn_summary += f"- {t.timestamp.strftime('%Y-%m-%d')}: WALLET {t_type} - {desc} ₹{t.amount}\n"
         
-    # 2. Prompt ChatGPT
-    system_prompt = """
-    You are an expert financial analyst. Analyze the following user transaction history.
-    Identify spending patterns, unusual anomalies, and providing actionable saving recommendations.
+    # Collect category sums
+    cat_totals = {}
+    total_spent = 0
+    total_txns = 0
     
-    Output MUST be valid JSON with this schema:
-    {
-        "patterns": ["string", "string"],
-        "anomalies": ["string"],
-        "recommendations": [
-            { "title": "string", "description": "string", "potential_savings": "string" }
-        ]
+    for t in manual_txns:
+        if t.type == 'expense':
+            cat = t.category or "Other"
+            amt = float(t.amount or 0)
+            cat_totals[cat] = cat_totals.get(cat, 0) + amt
+            total_spent += amt
+            total_txns += 1
+            
+    for t in wallet_txns:
+        if t.transaction_type == 'DEBIT':
+            cat = "Wallet Payment"
+            amt = float(t.amount or 0)
+            cat_totals[cat] = cat_totals.get(cat, 0) + amt
+            total_spent += amt
+            total_txns += 1
+            
+    if not total_spent:
+        return {
+            "patterns": ["No significant spending detected in the last 30 days."],
+            "anomalies": [],
+            "recommendations": [{"title": "Track Expenses", "description": "Log more transactions to get insights.", "potential_savings": "₹0"}]
+        }
+        
+    top_categories = sorted(cat_totals.items(), key=lambda x: x[1], reverse=True)
+    top_cat = top_categories[0][0] if top_categories else "General"
+    top_amt = top_categories[0][1] if top_categories else 0
+    
+    patterns = [
+        f"You made {total_txns} transactions in the last 30 days totaling ₹{total_spent:,.0f}.",
+        f"Your highest spending category is {top_cat} (₹{top_amt:,.0f}), accounting for {round((top_amt/total_spent)*100)}% of your expenses."
+    ]
+    
+    anomalies = []
+    if top_amt > (total_spent * 0.6):
+        anomalies.append(f"Unusually high concentration of spending in {top_cat}.")
+        
+    recommendations = []
+    
+    if top_cat in ["Food", "Dining", "Entertainment", "Shopping"]:
+        savings = top_amt * 0.20
+        recommendations.append({
+            "title": f"Reduce {top_cat} Spend",
+            "description": f"Cutting your {top_cat} expenses by 20% would save you significantly.",
+            "potential_savings": f"₹{savings:,.0f}"
+        })
+    else:
+        savings = total_spent * 0.10
+        recommendations.append({
+            "title": "General Spend Reduction",
+            "description": "Try to reduce overall discretionary spending by 10%.",
+            "potential_savings": f"₹{savings:,.0f}"
+        })
+
+    analysis_result = {
+        "patterns": patterns,
+        "anomalies": anomalies,
+        "recommendations": recommendations
     }
     
-    Keep insights concise, friendly, and non-judgmental. Focus on high-impact advice.
-    """
+    # 3. Save to DB (Cache)
+    SpendingPattern.objects.create(
+        user=user,
+        analysis_data=analysis_result
+    )
     
-    try:
-        raw_output = generate_text(
-            user_prompt=txn_summary,
-            system_prompt=system_prompt,
-            max_output_tokens=1200,
-        )
-        raw_output = strip_json_fences(raw_output)
-            
-        analysis_result = json.loads(raw_output.strip())
-        
-        # 3. Save to DB (Cache)
-        SpendingPattern.objects.create(
-            user=user,
-            analysis_data=analysis_result
-        )
-        
-        return analysis_result
-
-    except LLMServiceBusyError:
-        return {
-            "patterns": ["AI analysis is temporarily unavailable due to provider load."],
-            "anomalies": [],
-            "recommendations": [
-                {
-                    "title": "Try again shortly",
-                    "description": "Detailed spending insights will be available once provider load drops.",
-                    "potential_savings": "Unknown",
-                }
-            ],
-        }
-    except Exception as e:
-        print(f"Spending analysis failed: {e}")
-        return {"error": "Failed to analyze spending patterns."}
+    return analysis_result

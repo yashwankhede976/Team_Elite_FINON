@@ -25,6 +25,7 @@ import Cards from './pages/dashboard/Cards';
 import Documents from './pages/dashboard/Documents';
 import Transactions from './pages/dashboard/Transactions';
 import Wallet from './pages/dashboard/Wallet';
+import UPIAnalyser from './pages/dashboard/UPIAnalyser';
 
 export default function App() {
     return (
@@ -58,6 +59,7 @@ export default function App() {
                             <Route path="coach" element={<AICoach />} />
                             <Route path="documents" element={<Documents />} />
                             <Route path="education" element={<FinancialEducation />} />
+                            <Route path="upi-analyser" element={<UPIAnalyser />} />
                             <Route path="settings" element={<Settings />} />
                         </Route>
 

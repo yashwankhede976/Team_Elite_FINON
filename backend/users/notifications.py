@@ -20,7 +20,7 @@ def notify_welcome(user):
     """Welcome notification for new users after onboarding."""
     notify(
         user,
-        title='Welcome to Finexa! 🎉',
+        title='Welcome to FINON! 🎉',
         message=f'Hi {user.first_name or user.username}, your financial dashboard is ready. Start by adding transactions or setting savings goals.',
         notification_type='system',
         link='/dashboard',
@@ -131,7 +131,7 @@ def notify_onboarding_complete(user):
     notify(
         user,
         title='Profile Setup Complete ✅',
-        message='Your financial profile is set up. Finexa AI can now give you personalized insights!',
+        message='Your financial profile is set up. FINON AI can now give you personalized insights!',
         notification_type='success',
         link='/dashboard',
     )

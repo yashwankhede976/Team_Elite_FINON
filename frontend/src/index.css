@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════
-   FINEXA — Dark-Only Design System
+   FINON — Dark-Only Design System
    Palette: Pure Black · White · Purple
 ═══════════════════════════════════════════════════════ */
 @tailwind base;
@@ -55,6 +55,35 @@
     }
 
     html.light body {
+        background: var(--bg);
+        color: var(--text);
+    }
+
+    /* ── Emerald theme — dark green & white ───────────── */
+    html.emerald {
+        --bg: #020617;
+        --bg-2: #064e3b;
+        --surface: rgba(2, 44, 34, 0.95);
+        --surface-2: rgba(6, 78, 59, 0.92);
+        --card: rgba(2, 44, 34, 0.9);
+        --border: rgba(16, 185, 129, 0.15);
+        --border-hi: rgba(16, 185, 129, 0.45);
+
+        --purple: #34d399;
+        --purple-dark: #059669;
+        --purple-light: #6ee7b7;
+        --purple-dim: rgba(16, 185, 129, 0.08);
+
+        --text: #ffffff;
+        --text-2: rgba(209, 250, 229, 0.75);
+        --text-3: rgba(167, 243, 208, 0.45);
+
+        --glow: rgba(16, 185, 129, 0.45);
+        --glow-strong: rgba(16, 185, 129, 0.7);
+        --glow-white: rgba(255, 255, 255, 0.06);
+    }
+
+    html.emerald body {
         background: var(--bg);
         color: var(--text);
     }
@@ -667,6 +696,40 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
+    }
+
+    /* ── Emerald-mode component overrides — beautiful green theme ── */
+    html.emerald .btn, html.emerald .btn-primary {
+        background: linear-gradient(135deg, #059669 0%, #34d399 60%, #6ee7b7 100%);
+        box-shadow: 0 4px 28px rgba(16, 185, 129, 0.6), 0 0 0 1px rgba(52, 211, 153, 0.35);
+    }
+    html.emerald .btn:hover, html.emerald .btn-primary:hover {
+        box-shadow: 0 8px 48px rgba(52, 211, 153, 0.8), 0 0 0 1px rgba(52, 211, 153, 0.6);
+    }
+    html.emerald .badge {
+        background: rgba(16, 185, 129, 0.12);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        color: #6ee7b7;
+    }
+    html.emerald .text-gradient {
+        background: linear-gradient(135deg, #a7f3d0 0%, #34d399 50%, #059669 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    html.emerald .text-gradient-hero {
+        background: linear-gradient(120deg, #ffffff 0%, #d1fae5 35%, #6ee7b7 65%, #34d399 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    html.emerald .credit-card {
+        background: linear-gradient(135deg, #022c22 0%, #064e3b 50%, #065f46 100%);
+        box-shadow: 0 16px 60px rgba(0, 0, 0, 0.8), 0 0 50px rgba(16, 185, 129, 0.35);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    html.emerald .section-purple {
+        background: linear-gradient(180deg, #020617 0%, #022c22 50%, #020617 100%);
     }
 }
 

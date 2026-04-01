@@ -241,3 +241,4 @@ DEFAULT_FROM_EMAIL = 'noreply@finright.ai'
 EMAIL_VERIFICATION_EXPIRY_HOURS = 24  # Token expires in 24 hours
 PASSWORD_RESET_EXPIRY_HOURS = 1  # Password reset token expires in 1 hour
 
+# Reloaded by Antigravity

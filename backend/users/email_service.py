@@ -23,9 +23,9 @@ def send_email_verification(user, verification_token, domain='http://localhost:3
     """
     verification_link = f"{domain}/verify-email?token={verification_token}"
     
-    subject = "Verify Your Email - Finexa"
+    subject = "Verify Your Email - FINON"
     html_message = f"""
-    <h2>Welcome to Finexa!</h2>
+    <h2>Welcome to FINON!</h2>
     <p>Please verify your email address by clicking the link below:</p>
     <p><a href="{verification_link}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
         Verify Email
@@ -65,7 +65,7 @@ def send_password_reset_email(user, reset_token, domain='http://localhost:3000')
     """
     reset_link = f"{domain}/reset-password?token={reset_token}"
     
-    subject = "Reset Your Password - Finexa"
+    subject = "Reset Your Password - FINON"
     html_message = f"""
     <h2>Password Reset Request</h2>
     <p>We received a request to reset your password. Click the link below to proceed:</p>
@@ -103,10 +103,10 @@ def send_welcome_email(user):
     Returns:
         bool: True if email sent successfully
     """
-    subject = "Welcome to Finexa!"
+    subject = "Welcome to FINON!"
     html_message = f"""
     <h2>Welcome, {user.username}!</h2>
-    <p>Thank you for joining Finexa.</p>
+    <p>Thank you for joining FINON.</p>
     <p>You can now log in and start managing your finances.</p>
     <p>If you have any questions, feel free to contact our support team.</p>
     <p>Happy tracking!</p>

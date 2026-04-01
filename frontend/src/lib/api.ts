@@ -1,5 +1,5 @@
 /**
- * Finexa API Service Layer
+ * FINON API Service Layer
  * Base URL: http://localhost:8000
  */
 
@@ -94,17 +94,17 @@ function normalizeSpendingAnalysis(data: any): SpendingAnalysisResponse {
 // ─── Token helpers ──────────────────────────────────────────────
 function getTokens() {
     return {
-        access: localStorage.getItem('finexa_access') || '',
-        refresh: localStorage.getItem('finexa_refresh') || '',
+        access: localStorage.getItem('finon_access') || '',
+        refresh: localStorage.getItem('finon_refresh') || '',
     };
 }
 function saveTokens(access: string, refresh: string) {
-    localStorage.setItem('finexa_access', access);
-    localStorage.setItem('finexa_refresh', refresh);
+    localStorage.setItem('finon_access', access);
+    localStorage.setItem('finon_refresh', refresh);
 }
 function clearTokens() {
-    localStorage.removeItem('finexa_access');
-    localStorage.removeItem('finexa_refresh');
+    localStorage.removeItem('finon_access');
+    localStorage.removeItem('finon_refresh');
 }
 
 // ─── Core fetch wrapper ─────────────────────────────────────────
@@ -133,7 +133,7 @@ async function apiFetch<T>(
         clearTokens();
         // Don't hard-redirect — let components handle the error gracefully
         // Only redirect if there's no stored user session at all
-        const storedUser = localStorage.getItem('finexa_user');
+        const storedUser = localStorage.getItem('finon_user');
         if (!storedUser) {
             window.location.href = '/login';
         }

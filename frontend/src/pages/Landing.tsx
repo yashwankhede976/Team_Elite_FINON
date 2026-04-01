@@ -130,7 +130,7 @@ function HeroCard3D() {
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full" style={{ background: 'rgba(168,85,247,0.95)', boxShadow: '0 0 10px rgba(168,85,247,0.9)' }} />
-                                <span className="text-white/80 text-[11px] font-black tracking-[0.3em]">FINEXA</span>
+                                <span className="text-white/80 text-[11px] font-black tracking-[0.3em]">FINON</span>
                             </div>
                         </div>
                         <div className="mt-3 mb-4">
@@ -176,8 +176,8 @@ const FEATURES = [
 
 
 
-/* -- Finexa Score Pill (navbar) ---------------------- */
-function FinexaScorePill() {
+/* -- FINON Score Pill (navbar) ---------------------- */
+function FINONScorePill() {
     const { user } = useAuth();
     const { isDark } = useTheme();
     const score = user?.financial_health_score ?? 0;
@@ -283,7 +283,7 @@ function AIAdvisorCard() {
                             style={{ background: '#22c55e', borderColor: 'rgba(14,8,32,1)' }} />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-[11px] font-bold text-white leading-none">Finexa AI</p>
+                        <p className="text-[11px] font-bold text-white leading-none">FINON AI</p>
                         <p className="text-[8px] mt-0.5 truncate" style={{ color: 'rgba(160,148,210,0.5)' }}>Always analyzing · Always on</p>
                     </div>
                     <motion.div animate={{ opacity: [0.6, 1, 0.6] }} transition={{ duration: 2, repeat: Infinity }}
@@ -381,13 +381,13 @@ export default function Landing() {
                     <div className="relative">
                         {isDark && <div className="absolute -inset-1.5 rounded-full opacity-60 group-hover:opacity-100 transition-opacity duration-300"
                             style={{ background: 'radial-gradient(circle, rgba(168,85,247,0.55), transparent 70%)', filter: 'blur(6px)', animation: 'glowPulse 3s ease-in-out infinite' }} />}
-                        <img src="/logo.png" alt="Finexa" className="relative w-9 h-9 object-contain"
+                        <img src="/logo.png" alt="FINON" className="relative w-9 h-9 object-contain"
                             style={{ filter: isDark ? 'drop-shadow(0 0 10px rgba(168,85,247,0.9))' : 'none' }} />
                     </div>
                     <span className="font-display font-extrabold text-xl"
                         style={isDark
                             ? { background: 'linear-gradient(120deg,#fff 0%,#e8d5ff 50%,#c084fc 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', letterSpacing: '-0.01em' }
-                            : { color: '#0a0a0a', letterSpacing: '-0.01em' }}>Finexa</span>
+                            : { color: '#0a0a0a', letterSpacing: '-0.01em' }}>FINON</span>
                 </Link>
 
                 {/* Nav RIGHT */}
@@ -553,7 +553,7 @@ export default function Landing() {
 
                 <div className="relative max-w-6xl mx-auto px-6">
                     <div className="text-center mb-14">
-                        <div className="badge inline-flex mb-5">Why Choose Finexa</div>
+                        <div className="badge inline-flex mb-5">Why Choose FINON</div>
                         <h2 className="font-display font-black text-1 leading-tight mb-4"
                             style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}>
                             Powerful Features.<br /><span className="text-gradient">Total Financial Control.</span>
@@ -594,7 +594,7 @@ export default function Landing() {
                 <motion.div className="text-center mb-10 px-6"
                     initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }} transition={{ duration: 0.5 }}>
-                    <p className="text-xs font-semibold tracking-[0.25em] uppercase mb-2" style={{ color: isDark ? 'rgba(168,85,247,0.5)' : '#9ca3af' }}>All Inside Finexa</p>
+                    <p className="text-xs font-semibold tracking-[0.25em] uppercase mb-2" style={{ color: isDark ? 'rgba(168,85,247,0.5)' : '#9ca3af' }}>All Inside FINON</p>
                     <h2 className="font-display font-black" style={{ fontSize: 'clamp(1.6rem,3.5vw,2.4rem)', color: isDark ? '#fff' : '#0a0a0a' }}>
                         Powerful features. <span className="text-gradient">Total control.</span>
                     </h2>
@@ -756,7 +756,7 @@ export default function Landing() {
                                     <Bot size={15} className="text-white" />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-semibold text-1">Finexa AI Coach</p>
+                                    <p className="text-sm font-semibold text-1">FINON AI Coach</p>
                                     <div className="flex items-center gap-1.5">
                                         <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
                                         <p className="text-[10px] text-3">Online · 97,100 credits</p>
@@ -950,13 +950,13 @@ export default function Landing() {
                             <div className="flex items-center gap-2.5 mb-3">
                                 <div className="relative">
                                     {isDark && <div className="absolute -inset-1 rounded-full opacity-50" style={{ background: 'radial-gradient(circle,rgba(168,85,247,0.5),transparent 70%)', filter: 'blur(4px)' }} />}
-                                    <img src="/logo.png" alt="Finexa" className="relative w-6 h-6 object-contain"
+                                    <img src="/logo.png" alt="FINON" className="relative w-6 h-6 object-contain"
                                         style={{ filter: isDark ? 'drop-shadow(0 0 7px rgba(168,85,247,0.8))' : 'none' }} />
                                 </div>
                                 <span className="font-display font-extrabold text-lg"
                                     style={isDark
                                         ? { background: 'linear-gradient(120deg,#fff 0%,#e8d5ff 50%,#c084fc 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }
-                                        : { color: '#0a0a0a' }}>Finexa</span>
+                                        : { color: '#0a0a0a' }}>FINON</span>
                             </div>
                             <p className="text-xs leading-relaxed max-w-xs" style={{ color: isDark ? 'rgba(160,148,210,0.45)' : '#9ca3af' }}>AI-powered financial coaching. Privacy-first. Educational only. Not investment advice.</p>
                         </div>
@@ -986,7 +986,7 @@ export default function Landing() {
                     <div className="flex items-center justify-between pt-5"
                         style={{ borderTop: isDark ? '1px solid rgba(168,85,247,0.1)' : '1px solid rgba(0,0,0,0.08)' }}>
                         <p className="text-[11px]" style={{ color: isDark ? 'rgba(160,148,210,0.35)' : '#9ca3af' }}>Not investment advice. Educational purposes only.</p>
-                        <p className="text-[11px]" style={{ color: isDark ? 'rgba(160,148,210,0.35)' : '#9ca3af' }}>&copy; 2026 Finexa.</p>
+                        <p className="text-[11px]" style={{ color: isDark ? 'rgba(160,148,210,0.35)' : '#9ca3af' }}>&copy; 2026 FINON.</p>
                     </div>
                 </div>
             </footer>

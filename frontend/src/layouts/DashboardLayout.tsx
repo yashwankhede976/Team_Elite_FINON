@@ -6,7 +6,7 @@ import {
     Trophy, MessageCircle, BookOpen, Settings, LogOut,
     Bell, ChevronLeft, ChevronRight, Menu, FileText,
     ListOrdered, TrendingUp, Sparkles, X, Plus,
-    AlertCircle, CheckCircle, Info, Clock
+    AlertCircle, CheckCircle, Info, Clock, UploadCloud
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -15,6 +15,7 @@ import { NotificationsAPI, HealthAPI } from '../lib/api';
 
 // Sidebar items - Institutional navigation
 const navItems = [
+
     { to: '/dashboard', icon: LayoutDashboard, label: 'Overview', end: true },
     { to: '/dashboard/wallet', icon: Wallet, label: 'Wallet' },
     { to: '/dashboard/transactions', icon: ListOrdered, label: 'Transactions' },
@@ -29,7 +30,7 @@ const navItems = [
     { to: '/dashboard/settings', icon: Settings, label: 'Settings' },
 ];
 
-function FinexaScorePill() {
+function FINONScorePill() {
     const { isDark } = useTheme();
     const [score, setScore] = useState<number | null>(null);
 
@@ -242,7 +243,7 @@ export default function DashboardLayout() {
                 <div className="relative flex-shrink-0">
                     <div className="absolute -inset-1.5 rounded-full opacity-55"
                         style={{ background: 'radial-gradient(circle, rgba(168,85,247,0.5), transparent 70%)', filter: 'blur(5px)', animation: 'glowPulse 3s ease-in-out infinite' }} />
-                    <img src="/logo.png" alt="Finexa" className="relative w-8 h-8 object-contain drop-shadow-[0_0_9px_rgba(168,85,247,0.9)]" />
+                    <img src="/logo.png" alt="FINON" className="relative w-8 h-8 object-contain drop-shadow-[0_0_9px_rgba(168,85,247,0.9)]" />
                 </div>
                 {!collapsed && (
                     <span className="font-display font-extrabold text-xl"
@@ -255,7 +256,7 @@ export default function DashboardLayout() {
                             backgroundClip: 'text',
                             letterSpacing: '-0.01em'
                         }}>
-                        Finexa
+                        FINON
                     </span>
                 )}
             </Link>
@@ -404,7 +405,7 @@ export default function DashboardLayout() {
                             {aiCredits >= 1000 ? `${(aiCredits / 1000).toFixed(0)}k` : aiCredits} credits
                         </button>
 
-                        <FinexaScorePill />
+                        <FINONScorePill />
 
                         <ThemeToggle size="sm" />
 

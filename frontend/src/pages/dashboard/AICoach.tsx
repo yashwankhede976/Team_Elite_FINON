@@ -90,7 +90,7 @@ export default function AICoach() {
 
     const [msgs, setMsgs] = useState<ChatMsg[]>([{
         id: '0', role: 'assistant',
-        content: `Hi ${user?.first_name || 'there'}! I'm your Finexa AI Financial Coach \u2014 powered by advanced AI. I can analyse your spending, explain financial concepts, and guide you toward your goals.\n\nEach message costs ${CHAT_COST} AI credits. Ask me anything!`,
+        content: `Hi ${user?.first_name || 'there'}! I'm your FINON AI Financial Coach \u2014 powered by advanced AI. I can analyse your spending, explain financial concepts, and guide you toward your goals.\n\nEach message costs ${CHAT_COST} AI credits. Ask me anything!`,
         ts: new Date(),
     }]);
     const [input, setInput] = useState('');
@@ -248,7 +248,7 @@ export default function AICoach() {
                             style={{ background: '#10b981', borderColor: 'var(--surface)' }} />
                     </div>
                     <div>
-                        <p className="font-semibold text-sm text-1">Finexa AI Coach</p>
+                        <p className="font-semibold text-sm text-1">FINON AI Coach</p>
                         <div className="flex items-center gap-1.5">
                             <div className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-400'} animate-pulse`} />
                             <p className="text-[10px] text-3">{isConnected ? 'Online' : 'Reconnecting...'} · {CHAT_COST} credits/msg</p>
