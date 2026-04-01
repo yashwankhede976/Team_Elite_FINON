@@ -381,6 +381,38 @@ export function generateRecommendations(
     });
   }
 
+  // Ensure output always has 3-5 actionable recommendations for hackathon requirement.
+  if (recs.length < 3) {
+    const fallbackPool: SavingsRecommendation[] = [
+      {
+        title: 'Adopt a Weekly Spending Cap',
+        description: 'Set a weekly cap for discretionary categories and track it every Sunday. Short feedback loops reduce overspending faster than monthly reviews.',
+        potentialSavings: `₹${Math.max(500, Math.round(totalExpenses * 0.05)).toLocaleString('en-IN')}/month`,
+        priority: 'medium',
+        icon: '📊',
+      },
+      {
+        title: 'Create a No-Spend Day Routine',
+        description: 'Pick 1-2 fixed no-spend days each week for food delivery and impulse purchases. This simple habit reduces small leaks significantly over time.',
+        potentialSavings: `₹${Math.max(400, Math.round(totalExpenses * 0.04)).toLocaleString('en-IN')}/month`,
+        priority: 'low',
+        icon: '🧭',
+      },
+      {
+        title: 'Enable Auto-Save After Salary Credit',
+        description: 'Automate a transfer to savings right after salary is credited. Pay-yourself-first prevents leftover-based saving and improves consistency.',
+        potentialSavings: `₹${Math.max(1000, Math.round(totalIncome * 0.1)).toLocaleString('en-IN')}/month`,
+        priority: 'high',
+        icon: '🏦',
+      },
+    ];
+
+    for (const fallback of fallbackPool) {
+      if (recs.length >= 3) break;
+      if (!recs.some(r => r.title === fallback.title)) recs.push(fallback);
+    }
+  }
+
   // Return top 5 by priority
   const priorityOrder = { high: 0, medium: 1, low: 2 };
   return recs

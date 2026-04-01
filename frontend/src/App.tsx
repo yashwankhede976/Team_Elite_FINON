@@ -14,6 +14,7 @@ import HowItWorks from './pages/HowItWorks';
 import Subscription from './pages/Subscription';
 import Overview from './pages/dashboard/Overview';
 import SpendingInsights from './pages/dashboard/SpendingInsights';
+import UPIAnalyser from './pages/dashboard/UPIAnalyser';
 import BudgetOptimizer from './pages/dashboard/BudgetOptimizer';
 import GoalsTracker from './pages/dashboard/GoalsTracker';
 import EmergencyRisk from './pages/dashboard/EmergencyRisk';
@@ -24,7 +25,6 @@ import Settings from './pages/dashboard/Settings';
 import Cards from './pages/dashboard/Cards';
 import Documents from './pages/dashboard/Documents';
 import Transactions from './pages/dashboard/Transactions';
-import Wallet from './pages/dashboard/Wallet';
 
 export default function App() {
     return (
@@ -47,10 +47,10 @@ export default function App() {
                             <ProtectedRoute><DashboardLayout /></ProtectedRoute>
                         }>
                             <Route index element={<Overview />} />
-                            <Route path="wallet" element={<Wallet />} />
                             <Route path="cards" element={<Cards />} />
                             <Route path="transactions" element={<Transactions />} />
-                            <Route path="spending" element={<SpendingInsights />} />
+                            <Route path="spending" element={<UPIAnalyser />} />
+                            <Route path="spending-insights" element={<SpendingInsights />} />
                             <Route path="budget" element={<BudgetOptimizer />} />
                             <Route path="goals" element={<GoalsTracker />} />
                             <Route path="emergency" element={<EmergencyRisk />} />

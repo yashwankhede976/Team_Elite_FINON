@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Upload, ShieldCheck, FileText, BarChart3, RefreshCw, AlertCircle,
@@ -10,7 +10,6 @@ import {
   AreaChart, Area, XAxis, YAxis, BarChart, Bar, Legend,
 } from 'recharts';
 import { useTheme } from '../../contexts/ThemeContext';
-import { TransactionsAPI } from '../../lib/api';
 import { parseCSV, parsePDFText, extractPDFText } from '../../lib/upiParser';
 import {
   processTransactions, getCategorySummary, getMonthlyTrend,
@@ -36,6 +35,8 @@ interface AnalysisResult {
   totalTransactions: number;
   fileName: string;
 }
+
+const SESSION_KEY = 'upi_local_analysis_v1';
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -80,6 +81,20 @@ export default function UPIAnalyser() {
   const [expandedRec, setExpandedRec] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Restore the latest session-only analysis for this browser tab/session.
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(SESSION_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as AnalysisResult;
+      if (parsed && Array.isArray(parsed.transactions)) {
+        setResult(parsed);
+      }
+    } catch {
+      sessionStorage.removeItem(SESSION_KEY);
+    }
+  }, []);
+
   // ── Process uploaded file ──────────────────────────────────────────────────
   const processFile = useCallback(async (file: File) => {
     setProcessing(true);
@@ -114,19 +129,7 @@ export default function UPIAnalyser() {
       const totalIncome = Math.round(categorised.filter(t => t.credit > 0).reduce((s, t) => s + t.credit, 0));
       const totalExpenses = Math.round(categories.reduce((s, c) => s + c.amount, 0));
 
-      // Sync to backend transactions database silently
-      const apiTransactions = categorised.map(t => ({
-        amount: Math.abs(t.credit > 0 ? t.credit : t.debit),
-        category: t.category,
-        type: t.credit > 0 ? 'income' : 'expense' as 'income'|'expense',
-        description: t.description.substring(0, 200) || 'Uploaded Transaction',
-        date: t.date,
-        source: 'pdf',
-        source_document: file.name
-      }));
-      TransactionsAPI.bulkCreate(apiTransactions).catch((err) => console.error('Failed to sync to backend:', err));
-
-      setResult({
+      const nextResult: AnalysisResult = {
         transactions: categorised,
         categories,
         monthlyTrend,
@@ -137,7 +140,10 @@ export default function UPIAnalyser() {
         totalExpenses,
         totalTransactions: rawTxns.length,
         fileName: file.name,
-      });
+      };
+
+      setResult(nextResult);
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(nextResult));
       setActiveTab('overview');
     } catch (err: any) {
       setError(err.message || 'Failed to parse file. Please try a different format.');
@@ -308,7 +314,7 @@ export default function UPIAnalyser() {
             style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', color: '#22c55e' }}>
             <ShieldCheck size={12} /> Data never stored
           </div>
-          <button onClick={() => { setResult(null); setError(null); }}
+          <button onClick={() => { setResult(null); setError(null); sessionStorage.removeItem(SESSION_KEY); }}
             className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all"
             style={{ background: 'rgba(168,85,247,0.1)', border: '1px solid rgba(168,85,247,0.2)', color: '#a855f7' }}>
             <Upload size={13} /> New Upload

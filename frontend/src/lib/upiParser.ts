@@ -136,7 +136,7 @@ export function parseCSV(text: string): UPITransaction[] {
 export async function extractPDFText(arrayBuffer: ArrayBuffer): Promise<string> {
   const pdfjsLib = await import('pdfjs-dist');
   pdfjsLib.GlobalWorkerOptions.workerSrc =
-    `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+    new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString();
 
   const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
   const pdf = await loadingTask.promise;

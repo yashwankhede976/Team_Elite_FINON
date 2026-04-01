@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    LayoutDashboard, PieChart, Target, Wallet, Shield, Zap,
+    LayoutDashboard, PieChart, Target, Shield, Zap,
     Trophy, MessageCircle, BookOpen, Settings, LogOut,
     Bell, ChevronLeft, ChevronRight, Menu, FileText,
     ListOrdered, TrendingUp, Sparkles, X, Plus,
@@ -17,9 +17,8 @@ import { NotificationsAPI, HealthAPI } from '../lib/api';
 const navItems = [
 
     { to: '/dashboard', icon: LayoutDashboard, label: 'Overview', end: true },
-    { to: '/dashboard/wallet', icon: Wallet, label: 'Wallet' },
     { to: '/dashboard/transactions', icon: ListOrdered, label: 'Transactions' },
-    { to: '/dashboard/spending', icon: PieChart, label: 'Spending' },
+    { to: '/dashboard/spending', icon: PieChart, label: 'Spending (Private)' },
     { to: '/dashboard/budget', icon: TrendingUp, label: 'Budget' },
     { to: '/dashboard/goals', icon: Target, label: 'Goals' },
     { to: '/dashboard/emergency', icon: Shield, label: 'Risk & Safety' },

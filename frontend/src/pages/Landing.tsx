@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import ThemeToggle from '../components/ThemeToggle';
 import {
-    Shield, Zap, Brain, Wallet, Target, TrendingUp,
+    Shield, Zap, Brain, Target, TrendingUp,
     ArrowRight, Check, BarChart3, Lock, Sparkles,
     ChevronRight, Bot, Wifi, CreditCard, Activity,
     FileText, PieChart
@@ -171,7 +171,7 @@ const FEATURES = [
     { icon: Zap, title: '100k Free AI Credits', desc: 'Power chat, document analysis, simulations, and insights from day one.' },
     { icon: Target, title: 'Smart Goals Tracker', desc: 'AI-calculated feasibility and milestone alerts for every goal.' },
     { icon: Shield, title: 'Risk Simulator', desc: 'Stress-test income drops, job loss, or loan scenarios in real time.' },
-    { icon: Wallet, title: 'Digital Wallet', desc: 'Virtual cards, balance management, and full transaction history.' },
+    { icon: PieChart, title: 'Smart Spending Insights', desc: 'Track categories, monthly trends, and merchant-level spend in one view.' },
 ];
 
 
@@ -471,7 +471,7 @@ export default function Landing() {
                                 className="text-base leading-relaxed mb-7 max-w-lg"
                                 style={{ color: 'var(--text-2)' }}>
                                 Privacy-first AI coaching — health scoring, smart budgeting, risk simulations,
-                                digital wallet & <span style={{ color: isDark ? 'var(--purple)' : '#0a0a0a', fontWeight: 600 }}>100k free AI credits</span>.
+                                and <span style={{ color: isDark ? 'var(--purple)' : '#0a0a0a', fontWeight: 600 }}>100k free AI credits</span>.
                             </motion.p>
 
                             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28 }}
@@ -645,14 +645,14 @@ export default function Landing() {
                     <motion.div animate={{ x: ['-50%', '0%'] }} transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}
                         className="flex gap-4 w-max pl-4">
                         {[
-                            { icon: Wallet, label: 'Digital Wallet', color: '#c084fc' },
+                            { icon: FileText, label: 'Statement Uploads', color: '#c084fc' },
                             { icon: Zap, label: '100k Free AI Credits', color: '#f59e0b' },
                             { icon: Bot, label: 'AI Financial Coach', color: '#a855f7' },
                             { icon: BarChart3, label: 'Spending Insights', color: '#10b981' },
                             { icon: Shield, label: 'Risk Simulation', color: '#8b5cf6' },
                             { icon: PieChart, label: 'Anomaly Detection', color: '#7c3aed' },
                             // duplicate for seamless loop
-                            { icon: Wallet, label: 'Digital Wallet_', color: '#c084fc' },
+                            { icon: FileText, label: 'Statement Uploads_', color: '#c084fc' },
                             { icon: Zap, label: '100k Free AI Credits_', color: '#f59e0b' },
                             { icon: Bot, label: 'AI Financial Coach_', color: '#a855f7' },
                             { icon: BarChart3, label: 'Spending Insights_', color: '#10b981' },
@@ -963,7 +963,7 @@ export default function Landing() {
                         <div>
                             <p className="text-xs font-semibold text-1 mb-3">Product</p>
                             <div className="space-y-2">
-                                {['Features', 'How It Works', 'AI Coach', 'Wallet'].map(l => (
+                                {['Features', 'How It Works', 'AI Coach', 'Spending'].map(l => (
                                     <a key={l} href="#features" className="block text-xs transition-colors"
                                         style={{ color: isDark ? 'rgba(160,148,210,0.45)' : '#9ca3af' }}
                                         onMouseEnter={e => e.currentTarget.style.color = isDark ? 'rgba(200,190,255,0.7)' : '#0a0a0a'}
