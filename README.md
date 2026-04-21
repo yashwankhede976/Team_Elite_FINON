@@ -4,6 +4,7 @@
 
 A **privacy-first** web tool that accepts UPI transaction statements (PDF/CSV), auto-categorises every transaction, generates a visual spending dashboard with monthly trends and category breakdowns, identifies top spending merchants, flags potentially recurring subscriptions, and produces 3–5 personalised AI-generated savings recommendations — all **without ever sending your data to a server**.
 
+
 ---
 
 ## 🛡️ Privacy Architecture
